@@ -21,8 +21,8 @@ if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const email = document.getElementById("email").value;
-        const senha = document.getElementById("senha").value;
+const email = document.getElementById("su-email").value;
+        const senha = document.getElementById("su-password").value;
 
         try {
             await signInWithEmailAndPassword(auth, email, senha);
@@ -44,9 +44,10 @@ if (signupForm) {
 
         const tipo = document.getElementById("accountType").value;
         const nome = document.getElementById("name").value;
-        const email = document.getElementById("su-email").value;
-        const senha = document.getElementById("su-password").value;
-
+        
+        const email = document.getElementById("email").value;
+        const senha = document.getElementById("senha").value;
+        
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
             const user = userCredential.user;
