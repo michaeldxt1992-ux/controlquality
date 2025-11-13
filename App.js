@@ -1,8 +1,10 @@
 import { auth, db } from "./firebase.js";
+
 import { 
     signInWithEmailAndPassword, 
     createUserWithEmailAndPassword 
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+
 import { 
     collection,
     addDoc,
@@ -11,15 +13,17 @@ import {
     getDoc
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
+
+// =========================
 // LOGIN
+// =========================
 const loginForm = document.getElementById("loginForm");
 if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-const email = document.getElementById("su-email").value;
-const senha = document.getElementById("su-password").value;
-
+        const email = document.getElementById("email").value;
+        const senha = document.getElementById("senha").value;
 
         try {
             await signInWithEmailAndPassword(auth, email, senha);
@@ -30,26 +34,37 @@ const senha = document.getElementById("su-password").value;
     });
 }
 
+
+// =========================
 // CADASTRO
+// =========================
 const signupForm = document.getElementById("signupForm");
 if (signupForm) {
     signupForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        const name = document.getElementById("name").value;
         const email = document.getElementById("email").value;
         const senha = document.getElementById("senha").value;
+        const type = document.getElementById("accountType").value;
 
         try {
-            await createUserWithEmailAndPassword(auth, email, senha);
+            const cred = await createUserWithEmailAndPassword(auth, email, senha);
+
             alert("Conta criada com sucesso!");
+
             window.location.href = "index.html";
+
         } catch (error) {
             alert("Erro ao criar conta: " + error.message);
         }
     });
 }
 
+
+// =========================
 // CRIAR RECLAMAÇÃO
+// =========================
 const complaintForm = document.getElementById("createComplaintForm");
 if (complaintForm) {
     complaintForm.addEventListener("submit", async (e) => {
