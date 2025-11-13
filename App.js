@@ -1,3 +1,4 @@
+// app.js (módulo)
 import { auth, db } from "./firebase.js";
 import { 
     signInWithEmailAndPassword, 
@@ -5,15 +6,12 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 import { 
     collection,
-    addDoc,
-    getDocs,
-    doc,
-    getDoc
+    addDoc
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 console.log("App.js carregado!");  // DEBUG
 
-// LOGIN ------------------------------------------
+// ----------------- LOGIN -----------------
 const loginForm = document.getElementById("loginForm");
 if (loginForm) {
     console.log("Login form encontrado.");
@@ -21,38 +19,61 @@ if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-const email = document.getElementById("su-email").value;
-        const senha = document.getElementById("su-password").value;
+        // IDs do index.html: email, senha
+        const emailField = document.getElementById("email");
+        const senhaField = document.getElementById("senha");
+
+        if (!emailField || !senhaField) {
+            console.error("Campos de login não encontrados (email/senha). IDs esperados: 'email', 'senha'");
+            alert("Erro: campos de login ausentes. Abra o console para detalhes.");
+            return;
+        }
+
+        const email = emailField.value.trim();
+        const senha = senhaField.value;
 
         try {
             await signInWithEmailAndPassword(auth, email, senha);
+            console.log("Login bem-sucedido:", email);
             window.location.href = "home.html";
         } catch (error) {
+            console.error("Erro ao entrar:", error);
             alert("Erro ao entrar: " + error.message);
         }
     });
 }
 
-// SIGNUP / CADASTRO -----------------------------------
+// ----------------- SIGNUP / CADASTRO -----------------
 const signupForm = document.getElementById("signupForm");
 if (signupForm) {
-
     console.log("Signup form encontrado.");
 
     signupForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const tipo = document.getElementById("accountType").value;
-        const nome = document.getElementById("name").value;
-        
-        const email = document.getElementById("email").value;
-        const senha = document.getElementById("senha").value;
-        
+        // IDs do signup.html: accountType, name, email, senha
+        const tipoEl = document.getElementById("accountType");
+        const nomeEl = document.getElementById("name");
+        const emailEl = document.getElementById("email");
+        const senhaEl = document.getElementById("senha");
+
+        if (!tipoEl || !nomeEl || !emailEl || !senhaEl) {
+            console.error("Campos de cadastro ausentes. IDs esperados: accountType, name, email, senha");
+            alert("Erro: campos de cadastro ausentes. Veja o console.");
+            return;
+        }
+
+        const tipo = tipoEl.value;
+        const nome = nomeEl.value.trim();
+        const email = emailEl.value.trim();
+        const senha = senhaEl.value;
+
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
             const user = userCredential.user;
+            console.log("Usuário criado no Auth:", user.uid);
 
-            // Salvar dados no Firestore
+            // Salvar dados do usuário no Firestore
             await addDoc(collection(db, "usuarios"), {
                 uid: user.uid,
                 nome,
@@ -63,14 +84,14 @@ if (signupForm) {
 
             alert("Conta criada com sucesso!");
             window.location.href = "index.html";
-
         } catch (error) {
+            console.error("Erro ao criar conta:", error);
             alert("Erro ao criar conta: " + error.message);
         }
     });
 }
 
-// CRIAR RECLAMAÇÃO -----------------------------------------
+// ----------------- CRIAR RECLAMAÇÃO -----------------
 const complaintForm = document.getElementById("createComplaintForm");
 if (complaintForm) {
     complaintForm.addEventListener("submit", async (e) => {
@@ -91,7 +112,6 @@ if (complaintForm) {
 
             alert("Reclamação enviada!");
             window.location.href = "home.html";
-
         } catch (error) {
             alert("Erro ao enviar reclamação: " + error.message);
         }
