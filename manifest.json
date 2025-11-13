@@ -1,22 +1,20 @@
 {
   "name": "Control Quality",
-  "short_name": "CtrlQuality",
-  "description": "Aplicativo oficial da Control Quality S.A para avaliação e controle de serviços.",
-  "start_url": "https://controlqualitysa.netlify.app/",
-  "scope": "/",
+  "short_name": "CtrQuality",
+  "start_url": "https://michaeldxt1992-ux.github.io/controlquality/",
+  "scope": "https://michaeldxt1992-ux.github.io/controlquality/",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#ffffff",
-  "theme_color": "#004d7a",
-
+  "theme_color": "#84D47A",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/michaeldxt1992-ux/controlquality/main/icon-192.png",
+      "src": "https://michaeldxt1992-ux.github.io/controlquality/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://raw.githubusercontent.com/michaeldxt1992-ux/controlquality/main/icon-512.png",
+      "src": "https://michaeldxt1992-ux.github.io/controlquality/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
