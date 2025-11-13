@@ -1,0 +1,11 @@
+Nome do app:
+Control Quality
+
+Descrição curta:
+Avalie e descubra a qualidade dos serviços das empresas em São Paulo e região.
+
+Descrição completa:
+O aplicativo Control Quality permite que você descubra, compare e avalie empresas de diversos setores em São Paulo e região. Nosso objetivo é melhorar a transparência e a qualidade dos serviços prestados, ajudando tanto consumidores quanto empresas a crescerem juntos.
+
+O que há de novo:
+Lançamento inicial — versões futuras incluirão perfil de empresas, busca por localização e envio de fotos.
