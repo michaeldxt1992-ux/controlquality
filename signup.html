@@ -5,18 +5,30 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Control Quality — Cadastro</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
-    :root { --bg:#0b0b0f; --card:#0f1724; --muted:#94a3b8; --accent:#9b8aff; --purple-600:#7c3aed; }
+    :root { 
+      --bg:#0b0b0f; 
+      --card:#0f1724; 
+      --muted:#94a3b8; 
+      --accent:#9b8aff; 
+      --purple-600:#7c3aed; 
+    }
     .bg-card { background: var(--card); }
   </style>
 </head>
+
 <body class="bg-[color:var(--bg)] text-gray-100 min-h-screen flex items-center justify-center">
+
   <div class="w-full max-w-md p-8">
     <div class="bg-card rounded-2xl p-6 shadow-lg">
+
       <h2 class="text-xl font-semibold mb-2">Criar conta</h2>
       <p class="text-sm text-[color:var(--muted)] mb-4">Escolha Conta Pessoal ou Conta Empresa</p>
 
+      <!-- FORMULÁRIO CORRIGIDO -->
       <form id="signupForm" class="space-y-4">
+
         <div>
           <label class="text-sm text-[color:var(--muted)]">Tipo</label>
           <select id="accountType" class="mt-1 w-full px-4 py-2 rounded-lg bg-[#09101a]">
@@ -32,24 +44,28 @@
 
         <div>
           <label class="text-sm text-[color:var(--muted)]">Email</label>
-          <input id="su-email" type="email" required class="mt-1 w-full px-4 py-2 rounded-lg bg-[#09101a]" />
+          <input id="email" type="email" required class="mt-1 w-full px-4 py-2 rounded-lg bg-[#09101a]" />
         </div>
 
         <div>
           <label class="text-sm text-[color:var(--muted)]">Senha</label>
-          <input id="su-password" type="password" required class="mt-1 w-full px-4 py-2 rounded-lg bg-[#09101a]" />
+          <input id="senha" type="password" required class="mt-1 w-full px-4 py-2 rounded-lg bg-[#09101a]" />
         </div>
 
-        <button type="submit" class="w-full py-3 rounded-lg bg-[color:var(--purple-600)]">Criar conta</button>
+        <button type="submit" class="w-full py-3 rounded-lg bg-[color:var(--purple-600)] font-semibold">
+          Criar conta
+        </button>
       </form>
 
       <div class="text-sm text-[color:var(--muted)] mt-4">
         <a href="index.html" class="text-[color:var(--accent)]">Voltar ao login</a>
       </div>
+
     </div>
   </div>
 
   <script type="module" src="firebase.js"></script>
-<script type="module" src="app.js"></script>
+  <script type="module" src="app.js"></script>
+
 </body>
 </html>
