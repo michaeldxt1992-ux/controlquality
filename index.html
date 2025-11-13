@@ -1,147 +1,50 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<!doctype html>
+<html lang="pt-BR" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Quality - Avaliações de Empresas</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { box-sizing: border-box; }
-        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .company-card { transition: all 0.3s ease; }
-        .company-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        .rank-badge { background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); }
-        .top-company { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); border: 3px solid #ff6b6b; }
-        .rating-stars { color: #fbbf24; }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Control Quality — Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --purple-700: #6b21a8;
+      --purple-600: #7c3aed;
+      --bg: #0b0b0f;
+      --card: #0f1724;
+      --muted: #94a3b8;
+      --accent: #9b8aff;
+    }
+    .bg-card { background: var(--card); }
+  </style>
 </head>
-<body class="bg-gray-50 min-h-full">
-    <header class="gradient-bg text-white py-8">
-        <div class="container mx-auto px-6 text-center">
-            <h1 class="text-4xl font-bold mb-2">🏆 Control Quality</h1>
-            <p class="text-lg opacity-90">Avalie e descubra as melhores empresas em São Paulo</p>
+<body class="bg-[color:var(--bg)] text-gray-100 min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-md p-8">
+    <div class="bg-card rounded-2xl p-6 shadow-lg">
+      <div class="mb-6 text-center">
+        <div class="mx-auto w-16 h-16 rounded-full bg-gradient-to-tr from-[color:var(--purple-700)] to-[color:var(--purple-600)] flex items-center justify-center text-2xl font-bold">CQ</div>
+        <h1 class="mt-4 text-2xl font-semibold">Control Quality</h1>
+        <p class="text-sm text-[color:var(--muted)] mt-1">A voz do consumidor, respostas reais.</p>
+      </div>
+
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="text-sm text-[color:var(--muted)]">E-mail</label>
+          <input id="email" type="email" required class="mt-1 w-full px-4 py-2 rounded-lg bg-[#09101a]">
         </div>
-    </header>
-    <div class="container mx-auto px-6 py-6">
-        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <div class="flex flex-col md:flex-row gap-4">
-                <input type="text" id="searchInput" placeholder="Buscar empresas..." 
-                       class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <select id="categoryFilter" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    <option value="">Todas as categorias</option>
-                    <option value="Tecnologia">Tecnologia</option>
-                    <option value="Saúde">Saúde</option>
-                    <option value="Finanças">Finanças</option>
-                    <option value="Varejo">Varejo</option>
-                    <option value="Manufatura">Manufatura</option>
-                </select>
-                <button onclick="addCompany()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    + Adicionar Empresa
-                </button>
-            </div>
+        <div>
+          <label class="text-sm text-[color:var(--muted)]">Senha</label>
+          <input id="password" type="password" required class="mt-1 w-full px-4 py-2 rounded-lg bg-[#09101a]">
         </div>
-        <div id="companiesList" class="space-y-4"></div>
+        <button type="submit" class="w-full py-3 rounded-lg bg-[color:var(--purple-600)] hover:bg-[color:var(--purple-700)] font-semibold">Entrar</button>
+        <div class="flex items-center justify-between text-sm mt-2 text-[color:var(--muted)]">
+          <a href="signup.html" class="text-[color:var(--accent)]">Criar conta</a>
+          <a href="#" id="skipBtn" class="text-[color:var(--muted)]">Testar sem login</a>
+        </div>
+      </form>
     </div>
-    <div id="addModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
-            <h3 class="text-2xl font-bold mb-6">Adicionar Nova Empresa</h3>
-            <form id="addCompanyForm" class="space-y-4">
-                <input type="text" id="companyName" placeholder="Nome da Empresa" required
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                <select id="companyCategory" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    <option value="">Selecione a Categoria</option>
-                    <option value="Tecnologia">Tecnologia</option>
-                    <option value="Saúde">Saúde</option>
-                    <option value="Finanças">Finanças</option>
-                    <option value="Varejo">Varejo</option>
-                    <option value="Manufatura">Manufatura</option>
-                </select>
-                <textarea id="companyDescription" placeholder="Descrição da Empresa" rows="3"
-                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
-                <div class="flex gap-4">
-                    <button type="submit" class="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                        Adicionar
-                    </button>
-                    <button type="button" onclick="closeModal()" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition-colors">
-                        Cancelar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <script>
-        let companies = [
-            {id: 1, name: "TechFlow Solutions", category: "Tecnologia", rating: 4.9, reviews: 1247, description: "Soluções em nuvem e desenvolvimento de software", qualityScore: 98},
-            {id: 2, name: "Saúde+ Clínicas", category: "Saúde", rating: 4.8, reviews: 892, description: "Atendimento médico com foco em qualidade e empatia", qualityScore: 96},
-            {id: 3, name: "Banco Seguro", category: "Finanças", rating: 4.7, reviews: 2156, description: "Serviços financeiros confiáveis e inovadores", qualityScore: 94},
-            {id: 4, name: "VarejoMax", category: "Varejo", rating: 4.6, reviews: 3421, description: "Experiência premium em varejo e atendimento", qualityScore: 92},
-            {id: 5, name: "Fabrika Sustentável", category: "Manufatura", rating: 4.5, reviews: 567, description: "Produção responsável e sustentável", qualityScore: 90}
-        ];
+    <p class="text-xs text-center text-[color:var(--muted)] mt-4">Versão MVP — Control Quality</p>
+  </div>
 
-        function renderCompanies(list = companies) {
-            const sorted = [...list].sort((a, b) => b.qualityScore - a.qualityScore);
-            const container = document.getElementById('companiesList');
-            container.innerHTML = sorted.map((c, i) => `
-                <div class="company-card bg-white rounded-lg shadow-md p-6 ${i < 3 ? 'top-company' : ''}">
-                    <div class="flex items-start justify-between">
-                        <div class="flex items-start space-x-4 flex-1">
-                            <div class="rank-badge text-white font-bold text-lg px-4 py-2 rounded-full text-center">#${i + 1}</div>
-                            <div class="flex-1">
-                                <div class="flex items-center gap-3 mb-2">
-                                    <h3 class="text-xl font-bold text-gray-800">${c.name}</h3>
-                                    ${i < 3 ? '<span class="text-2xl">🏆</span>' : ''}
-                                </div>
-                                <p class="text-gray-600 mb-3">${c.description}</p>
-                                <div class="flex items-center gap-3 mb-3">
-                                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">${c.category}</span>
-                                    <span class="rating-stars">${'★'.repeat(Math.floor(c.rating))}</span>
-                                    <span class="text-gray-600">${c.rating} (${c.reviews} avaliações)</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-sm text-gray-700">Qualidade:</span>
-                                        <div class="bg-gray-200 rounded-full h-3 w-24">
-                                            <div class="bg-green-500 h-3 rounded-full" style="width: ${c.qualityScore}%"></div>
-                                        </div>
-                                        <span class="font-bold text-green-600">${c.qualityScore}%</span>
-                                    </div>
-                                    <button onclick="rateCompany(${c.id})" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Avaliar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>`).join('');
-        }
-
-        function addCompany() {
-            document.getElementById('addModal').classList.remove('hidden');
-            document.getElementById('addModal').classList.add('flex');
-        }
-        function closeModal() {
-            document.getElementById('addModal').classList.add('hidden');
-            document.getElementById('addModal').classList.remove('flex');
-            document.getElementById('addCompanyForm').reset();
-        }
-
-        document.getElementById('addCompanyForm').addEventListener('submit', e => {
-            e.preventDefault();
-            const name = document.getElementById('companyName').value;
-            const category = document.getElementById('companyCategory').value;
-            const description = document.getElementById('companyDescription').value;
-            companies.push({id: companies.length + 1, name, category, description, rating: 4.0, reviews: 10, qualityScore: 85});
-            renderCompanies();
-            closeModal();
-        });
-
-        function rateCompany(id) {
-            const c = companies.find(x => x.id === id);
-            c.rating = Math.min(5, c.rating + 0.1);
-            c.reviews++;
-            c.qualityScore = Math.min(100, c.qualityScore + 1);
-            renderCompanies();
-        }
-
-        renderCompanies();
-    </script>
+  <script src="app.js"></script>
 </body>
 </html>

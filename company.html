@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Painel — Empresa</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>:root{--bg:#0b0b0f;--card:#0f1724;--muted:#94a3b8;--accent:#9b8aff;--purple:#7c3aed}</style>
+</head>
+<body class="bg-[color:var(--bg)] min-h-screen text-gray-100">
+  <header class="bg-[color:var(--card)] p-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[color:var(--purple)] to-[color:var(--accent)] flex items-center justify-center font-bold">CQ</div>
+      <div class="font-semibold">Painel da Empresa</div>
+    </div>
+    <div><a href="index.html" class="text-[color:var(--muted)]">Sair</a></div>
+  </header>
+
+  <main class="p-4">
+    <h2 class="text-lg font-semibold mb-4">Reclamações recebidas</h2>
+    <div id="companyList" class="space-y-4"></div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

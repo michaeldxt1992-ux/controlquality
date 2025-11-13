@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reclamação — Detalhe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>:root{--bg:#0b0b0f;--card:#0f1724;--muted:#94a3b8;--accent:#9b8aff;--purple:#7c3aed}</style>
+</head>
+<body class="bg-[color:var(--bg)] min-h-screen text-gray-100">
+  <header class="bg-[color:var(--card)] p-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[color:var(--purple)] to-[color:var(--accent)] flex items-center justify-center font-bold">CQ</div>
+      <div class="font-semibold">Detalhes da Reclamação</div>
+    </div>
+    <div><a href="home.html" class="text-[color:var(--muted)]">Voltar</a></div>
+  </header>
+
+  <main class="p-4 max-w-2xl mx-auto">
+    <div id="complaintCard" class="bg-[#081123] p-4 rounded-lg"></div>
+
+    <div class="mt-6">
+      <h3 class="text-sm text-[color:var(--muted)] mb-2">Respostas</h3>
+      <div id="responses" class="space-y-3"></div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
