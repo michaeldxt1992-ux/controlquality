@@ -1,6 +1,6 @@
 {
   "name": "Control Quality",
-  "short_name": "CtrQuality",
+  "short_name": "CtrlQuality",
   "start_url": "https://michaeldxt1992-ux.github.io/controlquality/",
   "scope": "https://michaeldxt1992-ux.github.io/controlquality/",
   "display": "standalone",
@@ -20,3 +20,4 @@
     }
   ]
 }
+
