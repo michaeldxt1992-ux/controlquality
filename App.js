@@ -1,24 +1,23 @@
 import { auth, db } from "./firebase.js";
-
 import { 
     signInWithEmailAndPassword, 
     createUserWithEmailAndPassword 
-} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-
+} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 import { 
     collection,
     addDoc,
     getDocs,
     doc,
     getDoc
-} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
+console.log("App.js carregado!");  // DEBUG
 
-// =========================
-// LOGIN
-// =========================
+// LOGIN ------------------------------------------
 const loginForm = document.getElementById("loginForm");
 if (loginForm) {
+    console.log("Login form encontrado.");
+
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -34,25 +33,34 @@ if (loginForm) {
     });
 }
 
-
-// =========================
-// CADASTRO
-// =========================
+// SIGNUP / CADASTRO -----------------------------------
 const signupForm = document.getElementById("signupForm");
 if (signupForm) {
+
+    console.log("Signup form encontrado.");
+
     signupForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const name = document.getElementById("name").value;
-        const email = document.getElementById("email").value;
-        const senha = document.getElementById("senha").value;
-        const type = document.getElementById("accountType").value;
+        const tipo = document.getElementById("accountType").value;
+        const nome = document.getElementById("name").value;
+        const email = document.getElementById("su-email").value;
+        const senha = document.getElementById("su-password").value;
 
         try {
-            const cred = await createUserWithEmailAndPassword(auth, email, senha);
+            const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+            const user = userCredential.user;
+
+            // Salvar dados no Firestore
+            await addDoc(collection(db, "usuarios"), {
+                uid: user.uid,
+                nome,
+                email,
+                tipo,
+                criadoEm: new Date()
+            });
 
             alert("Conta criada com sucesso!");
-
             window.location.href = "index.html";
 
         } catch (error) {
@@ -61,10 +69,7 @@ if (signupForm) {
     });
 }
 
-
-// =========================
-// CRIAR RECLAMAÇÃO
-// =========================
+// CRIAR RECLAMAÇÃO -----------------------------------------
 const complaintForm = document.getElementById("createComplaintForm");
 if (complaintForm) {
     complaintForm.addEventListener("submit", async (e) => {
