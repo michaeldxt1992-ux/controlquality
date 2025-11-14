@@ -1,18 +1,117 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+// IMPORTS DO FIREBASE -----------------------------------------------
+import { auth, db } from "./firebase.js";
 
-console.log("app.firebase.js carregado!"); // DEBUG
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyB2TRTp8vwXdvP4eMzrxmjmWKQcxPNhgRs",
-  authDomain: "controlquality-28980.firebaseapp.com",
-  projectId: "controlquality-28980",
-  storageBucket: "controlquality-28980.firebasestorage.app",
-  messagingSenderId: "414926471614",
-  appId: "1:414926471614:web:9cd7527cd8e725f1c4f9ef"
-};
+import {
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
-export const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+console.log("app.firebase.js carregado!");
+
+
+// GARANTIR QUE O DOM CARREGOU ---------------------------------------
+document.addEventListener("DOMContentLoaded", () => {
+
+  // ================================================================
+  // LOGIN -----------------------------------------------------------
+  // ================================================================
+  const loginForm = document.getElementById("loginForm");
+
+  if (loginForm) {
+    console.log("Login form encontrado.");
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const senha = document.getElementById("senha").value;
+
+      try {
+        await signInWithEmailAndPassword(auth, email, senha);
+        window.location.href = "home.html";
+      } catch (error) {
+        alert("Erro ao entrar: " + error.message);
+      }
+    });
+  }
+
+
+  // ================================================================
+  // CADASTRO (SIGNUP) ----------------------------------------------
+  // ================================================================
+  const signupForm = document.getElementById("signupForm");
+
+  if (signupForm) {
+    console.log("Signup form encontrado.");
+
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const tipo = document.getElementById("accountType").value;
+      const nome = document.getElementById("name").value;
+      const email = document.getElementById("su-email").value;
+      const senha = document.getElementById("su-password").value;
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+        const user = userCredential.user;
+
+        // SALVAR DADOS NO FIRESTORE ---------------------------------
+        await addDoc(collection(db, "usuarios"), {
+          uid: user.uid,
+          nome,
+          email,
+          tipo,
+          criadoEm: new Date()
+        });
+
+        alert("Conta criada com sucesso!");
+        window.location.href = "index.html";
+
+      } catch (error) {
+        alert("Erro ao criar conta: " + error.message);
+      }
+    });
+  }
+
+
+  // ================================================================
+  // CRIAR RECLAMAÇÃO -----------------------------------------------
+  // ================================================================
+  const complaintForm = document.getElementById("createComplaintForm");
+
+  if (complaintForm) {
+    complaintForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const empresa = document.getElementById("empresa").value;
+      const titulo = document.getElementById("titulo").value;
+      const descricao = document.getElementById("descricao").value;
+
+      try {
+        await addDoc(collection(db, "complaints"), {
+          empresa,
+          titulo,
+          descricao,
+          data: new Date(),
+          status: "aberto"
+        });
+
+        alert("Reclamação enviada!");
+        window.location.href = "home.html";
+
+      } catch (error) {
+        alert("Erro ao enviar reclamação: " + error.message);
+      }
+    });
+  }
+
+}); // FIM DO DOMCONTENTLOADED
