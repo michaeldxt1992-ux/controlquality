@@ -1,53 +1,44 @@
 <!doctype html>
 <html lang="pt-BR" class="dark">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Nova Reclamação</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Control Quality — Nova Reclamação</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>:root{--bg:#0b0b0f;--card:#0f1724;--muted:#94a3b8;--accent:#9b8aff;--purple:#7c3aed}</style>
+
+  <style>
+    :root { --bg:#0b0b0f; --card:#0f1724; --muted:#94a3b8; --accent:#9b8aff; --purple:#7c3aed; }
+  </style>
 </head>
-<body class="bg-[color:var(--bg)] min-h-screen text-gray-100">
-  <header class="bg-[color:var(--card)] p-4 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[color:var(--purple)] to-[color:var(--accent)] flex items-center justify-center font-bold">CQ</div>
-      <div class="font-semibold">Nova Reclamação</div>
-    </div>
+
+<body class="bg-[color:var(--bg)] text-gray-100 min-h-screen p-6">
+
+  <h2 class="text-xl font-semibold mb-4">Criar Reclamação</h2>
+
+  <form id="createComplaintForm" class="space-y-4">
+
     <div>
-      <a href="home.html" class="text-[color:var(--muted)]">Voltar</a>
+      <label class="text-sm">Empresa</label>
+      <input id="empresa" required class="w-full p-3 bg-[#0f1724] rounded-lg"/>
     </div>
-  </header>
 
-  <main class="p-4 max-w-2xl mx-auto">
-    <form id="createForm" class="space-y-4">
-      <div>
-        <label class="text-sm text-[color:var(--muted)]">Empresa</label>
-        <input id="company" class="w-full px-4 py-2 rounded-lg bg-[#09101a]" placeholder="Nome da empresa">
-      </div>
+    <div>
+      <label class="text-sm">Título</label>
+      <input id="titulo" required class="w-full p-3 bg-[#0f1724] rounded-lg"/>
+    </div>
 
-      <div>
-        <label class="text-sm text-[color:var(--muted)]">Título</label>
-        <input id="title" class="w-full px-4 py-2 rounded-lg bg-[#09101a]" placeholder="Resumo">
-      </div>
+    <div>
+      <label class="text-sm">Descrição</label>
+      <textarea id="descricao" required class="w-full p-3 bg-[#0f1724] rounded-lg h-32"></textarea>
+    </div>
 
-      <div>
-        <label class="text-sm text-[color:var(--muted)]">Descrição</label>
-        <textarea id="description" rows="5" class="w-full px-4 py-2 rounded-lg bg-[#09101a]" placeholder="Explique o problema..."></textarea>
-      </div>
+    <button type="submit" class="w-full py-3 bg-[color:var(--purple)] rounded-lg font-semibold">
+      Enviar Reclamação
+    </button>
 
-      <div>
-        <label class="text-sm text-[color:var(--muted)]">Fotos (opcional)</label>
-        <input id="photos" type="file" accept="image/*" multiple class="w-full mt-1" />
-      </div>
+  </form>
 
-      <div class="flex gap-3">
-        <button type="submit" class="flex-1 py-3 rounded-lg bg-[color:var(--purple)] font-semibold">Enviar reclamação</button>
-        <a href="home.html" class="flex-1 text-center py-3 rounded-lg bg-[#111827]">Cancelar</a>
-      </div>
-    </form>
-  </main>
-
-<script type="module" src="firebase.js"></script>
-<script type="module" src="app.firebase.js"></script>
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="app.firebase.js"></script>
 </body>
 </html>
