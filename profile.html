@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - Control Quality</title>
+
+    <style>
+        body {
+            background: #0d0d18;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .profile-card {
+            background: #131327;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 350px;
+            margin: auto;
+        }
+
+        .avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: #222;
+            margin: auto;
+            margin-bottom: 15px;
+        }
+
+        input {
+            width: 100%;
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            background: #1c1c38;
+            color: white;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            margin-top: 18px;
+            background: #035CFF;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .danger {
+            background: #ff4141;
+        }
+
+        a {
+            color: #ccc;
+            display: block;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Meu Perfil</h2>
+
+<div class="profile-card">
+    <img id="avatar" class="avatar" src="https://www.w3schools.com/howto/img_avatar.png">
+
+    <p><strong>E-mail:</strong> <span id="email"></span></p>
+    <p><strong>Nome:</strong> <span id="nome">Carregando...</span></p>
+    <p><strong>Total de Reclamações:</strong> <span id="total">0</span></p>
+
+    <input id="novoNome" placeholder="Novo nome">
+    <button onclick="atualizarNome()">Atualizar Nome</button>
+
+    <button onclick="trocarSenha()">Trocar Senha</button>
+    <button class="danger" onclick="deletarConta()">Excluir Conta</button>
+</div>
+
+<a href="home.html">Voltar</a>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script src="firebase.js"></script>
+<script src="auth-guard.js"></script>
+
+<script>
+auth.onAuthStateChanged(async user => {
+    if (!user) return;
+
+    // Mostra informações básicas
+    document.getElementById("email").textContent = user.email;
+
+    // Busca nome no Firestore
+    const doc = await db.collection("users").doc(user.uid).get();
+    if (doc.exists) {
+        document.getElementById("nome").textContent = doc.data().nome;
+    } else {
+        document.getElementById("nome").textContent = "(sem nome)";
+    }
+
+    // Busca número de reclamações
+    const snap = await db.collection("complaints")
+                         .where("userId", "==", user.uid)
+                         .get();
+
+    document.getElementById("total").textContent = snap.size;
+});
+
+
+async function atualizarNome() {
+    const user = auth.currentUser;
+    const novoNome = document.getElementById("novoNome").value.trim();
+
+    if (!novoNome) {
+        alert("Digite um nome válido!");
+        return;
+    }
+
+    await db.collection("users").doc(user.uid).set({
+        nome: novoNome,
+        email: user.email
+    });
+
+    alert("Nome atualizado!");
+    location.reload();
+}
+
+function trocarSenha() {
+    const email = auth.currentUser.email;
+    auth.sendPasswordResetEmail(email)
+        .then(() => alert("E-mail de redefinição enviado!"))
+        .catch(err => alert("Erro: " + err.message));
+}
+
+function deletarConta() {
+    if (!confirm("Tem certeza que deseja excluir sua conta?")) return;
+
+    const user = auth.currentUser;
+
+    user.delete()
+        .then(() => {
+            db.collection("users").doc(user.uid).delete();
+            alert("Conta excluída.");
+            window.location.href = "index.html";
+        })
+        .catch(err => alert("Erro: " + err.message));
+}
+</script>
+
+</body>
+</html>
