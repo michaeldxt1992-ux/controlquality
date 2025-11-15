@@ -1,116 +1,117 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes da Reclamação - CQ</title>
+    <title>Detalhes da Reclamação</title>
 
     <style>
         body {
-            background: #0d0d18;
-            color: white;
             font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-
-        .card {
-            background: #131327;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-
-        .status {
-            padding: 8px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            display: inline-block;
-            font-weight: bold;
-        }
-
-        .open { background: #ff5050; }
-        .answered { background: #835CFF; }
-        .resolved { background: #00c851; }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #035CFF;
-            border: none;
+            background-color: #0f0f14;
             color: white;
-            border-radius: 8px;
-            margin-top: 20px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
+            padding: 20px;
         }
 
-        a {
-            color: #ccc;
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .box {
+            background-color: #1b1b22;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 1px solid #333;
+        }
+
+        .label {
+            color: #bbb;
+            font-size: 14px;
+        }
+
+        .value {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .back-btn {
+            margin-top: 25px;
+            padding: 12px;
+            width: 100%;
+            background-color: #4444ff;
+            color: white;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+        }
+
+        .back-btn:hover {
+            background-color: #2222ff;
         }
     </style>
 </head>
-
 <body>
 
-<h2>Detalhes da Reclamação</h2>
+    <div class="title">Detalhes da Reclamação</div>
 
-<div id="content">Carregando...</div>
+    <div id="details" class="box">
+        <div class="label">Empresa:</div>
+        <div class="value" id="company">Carregando...</div>
 
-<button onclick="window.location.href='complaint-list.html'">Voltar</button>
+        <div class="label">Título:</div>
+        <div class="value" id="title"></div>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+        <div class="label">Descrição:</div>
+        <div class="value" id="description"></div>
 
-<script src="firebase.js"></script>
-<script src="auth-guard.js"></script>
+        <div class="label">Status:</div>
+        <div class="value" id="status"></div>
 
-<script>
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
+        <div class="label">Resposta da Empresa:</div>
+        <div class="value" id="response">Nenhuma resposta ainda.</div>
+    </div>
 
-    if (!id) {
-        document.getElementById("content").innerHTML =
-            "<p style='opacity:0.7;'>ID não encontrado.</p>";
-    } else {
-        loadDetails();
-    }
+    <button class="back-btn" onclick="goBack()">Voltar</button>
 
-    function loadDetails() {
-        db.collection("complaints").doc(id).get().then(doc => {
+    <!-- Firebase + Auth Guard -->
+    <script src="firebase.js"></script>
+    <script src="auth-guard.js"></script>
+    <script>
+        // Obter ID da URL
+        const params = new URLSearchParams(window.location.search);
+        const complaintId = params.get("id");
+
+        if (!complaintId) {
+            alert("ID da reclamação não encontrado.");
+            window.location.href = "complaint-list.html";
+        }
+
+        // Buscar dados da reclamação
+        db.collection("complaints").doc(complaintId).get().then(doc => {
             if (!doc.exists) {
-                document.getElementById("content").innerHTML =
-                    "<p style='opacity:0.7;'>Reclamação não encontrada.</p>";
+                alert("Reclamação não encontrada.");
+                window.location.href = "complaint-list.html";
                 return;
             }
 
-            const c = doc.data();
+            const data = doc.data();
 
-            let statusClass = "open";
-            if (c.status === "respondida") statusClass = "answered";
-            if (c.status === "resolvida") statusClass = "resolved";
+            document.getElementById("company").innerText = data.company;
+            document.getElementById("title").innerText = data.title;
+            document.getElementById("description").innerText = data.description;
+            document.getElementById("status").innerText = data.status || "Aguardando resposta";
 
-            document.getElementById("content").innerHTML = `
-                <div class="card">
-                    <h3>${c.title}</h3>
-
-                    <span class="status ${statusClass}">
-                        ${c.status.toUpperCase()}
-                    </span>
-
-                    <p><strong>Empresa:</strong> ${c.company}</p>
-                    <p><strong>Descrição:</strong> ${c.description}</p>
-                    <p><strong>Data:</strong> ${new Date(c.createdAt).toLocaleString()}</p>
-
-                    <h3>Resposta da Empresa:</h3>
-                    <p>${c.resposta || "<i>Aguardando resposta...</i>"}</p>
-                </div>
-            `;
+            if (data.response) {
+                document.getElementById("response").innerText = data.response;
+            }
         });
-    }
-</script>
+
+        function goBack() {
+            window.location.href = "complaint-list.html";
+        }
+    </script>
 
 </body>
 </html>
