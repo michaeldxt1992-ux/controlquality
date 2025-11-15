@@ -8,56 +8,49 @@
     <style>
         body {
             margin: 0;
-            padding: 0;
-            background: #0f0f17;
+            background: #0d0d18;
             font-family: Arial, sans-serif;
-            color: white;
-            height: 100vh;
+            color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
         }
 
         .card {
-            width: 320px;
-            background: #161623;
-            padding: 30px;
-            border-radius: 14px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.4);
+            background: #131327;
+            padding: 35px;
+            width: 350px;
+            border-radius: 12px;
             text-align: center;
         }
 
         input {
             width: 100%;
-            padding: 12px;
-            background: #0f1620;
-            border: 1px solid #222a36;
+            padding: 11px;
+            margin-top: 10px;
             border-radius: 6px;
-            color: #fff;
-            outline: none;
-            margin-bottom: 12px;
+            border: none;
+            background: #1c1c38;
+            color: white;
         }
 
         button {
             width: 100%;
             padding: 12px;
-            background: #8b5cf6;
-            color: white;
+            margin-top: 18px;
             border: none;
             border-radius: 6px;
-            font-size: 16px;
+            background: #835CFF;
+            color: white;
+            font-weight: bold;
             cursor: pointer;
-            margin-top: 8px;
         }
 
-        .links {
-            margin-top: 12px;
-            font-size: 13px;
-        }
-
-        .links a {
-            color: #a78bfa;
-            text-decoration: none;
+        a {
+            color: #ccc;
+            display: block;
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -67,71 +60,22 @@
     <div class="card">
         <h2>Criar Conta</h2>
 
-        <input id="nome" type="text" placeholder="Nome completo">
         <input id="email" type="email" placeholder="E-mail">
-        <input id="senha" type="password" placeholder="Senha">
+        <input id="password" type="password" placeholder="Senha">
 
-        <button onclick="criarConta()">Criar Conta</button>
+        <button onclick="signup()">Cadastrar</button>
 
-        <div class="links">
-            <a href="index.html">Já tenho conta</a>
-        </div>
+        <a href="index.html">Voltar ao Login</a>
     </div>
 
-<!-- 🔥 Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-<script>
-const firebaseConfig = {
-    apiKey: "AIzaSyB2TRpt8wXdVp4AeMzrxjmjWkQCxPNhgRS",
-    authDomain: "controlquality-28980.firebaseapp.com",
-    projectId: "controlquality-28980",
-    storageBucket: "controlquality-28980.appspot.com",
-    messagingSenderId: "414924674164",
-    appId: "1:414924674164:web:9cd7527cd8e725f1c4f9ef"
-};
+    <script src="firebase.js"></script>
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-</script>
-
-<script>
-function criarConta() {
-
-    const nome = document.getElementById("nome").value;
-    const email = document.getElementById("email").value;
-    const senha = document.getElementById("senha").value;
-
-    if (!nome || !email || !senha) {
-        alert("Preencha todos os campos!");
-        return;
-    }
-
-    auth.createUserWithEmailAndPassword(email, senha)
-    .then((userCredential) => {
-
-        const user = userCredential.user;
-
-        // Salva no Firestore também
-        return db.collection("usuarios").doc(user.uid).set({
-            nome: nome,
-            email: email,
-            criadoEm: new Date()
-        });
-
-    })
-    .then(() => {
-        alert("Conta criada com sucesso!");
-        window.location.href = "home.html";
-    })
-    .catch((error) => {
-        alert("Erro: " + error.message);
-    });
-}
-</script>
+    <script src="auth.js"></script>
 
 </body>
 </html>
