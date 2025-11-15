@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Reclamação - CQ</title>
+
+    <style>
+        body {
+            background: #0d0d18;
+            color: white;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 6px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #035CFF;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Criar Reclamação</h2>
+
+<input id="companyName" placeholder="Nome da Empresa">
+<input id="title" placeholder="Título da Reclamação">
+<textarea id="description" rows="5" placeholder="Descreva o problema"></textarea>
+
+<button onclick="submitComplaint()">Enviar Reclamação</button>
+
+<a href="complaint.html" style="color:#ccc; display:block; margin-top:20px;">Voltar</a>
+
+<!-- Firebase -->
+<script src="firebase.js"></script>
+<script src="auth-guard.js"></script>
+
+<script>
+function submitComplaint() {
+    const companyName = document.getElementById("companyName").value;
+    const title = document.getElementById("title").value;
+    const description = document.getElementById("description").value;
+
+    if (!companyName || !title || !description) {
+        alert("Preencha todos os campos!");
+        return;
+    }
+
+    const userId = auth.currentUser.uid;
+
+    db.collection("reclamacoes")
+        .add({
+            userId,
+            companyName,
+            title,
+            description,
+            resposta: "",
+            status: "aberta",
+            data: new Date()
+        })
+        .then(() => {
+            alert("Reclamação enviada com sucesso!");
+            window.location.href = "complaint-list.html";
+        })
+        .catch(err => alert("Erro: " + err));
+}
+</script>
+
+</body>
+</html>
