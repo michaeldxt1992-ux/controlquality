@@ -1,32 +1,20 @@
-// auth-guard.js — protege páginas que exigem autenticação
+// ===============================================================
+//  AUTH GUARD - Firebase v8 (compatível com seu projeto)
+//  Protege páginas que exigem usuário logado
+// ===============================================================
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
-
-// Config Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyB2TRtp8wXdvP4eMzrxjmWlKQcxPNhgRS",
-    authDomain: "controlquality-28980.firebaseapp.com",
-    projectId: "controlquality-28980",
-    storageBucket: "controlquality-28980.appspot.com",
-    messagingSenderId: "414942674144",
-    appId: "1:414942674144:web:9cd7527cd8e725f1c4f9ef"
-};
-
-// Evita inicialização duplicada
-let app;
-
-try {
-    app = initializeApp(firebaseConfig);
-} catch (e) {
-    // ignora erro "app já inicializado"
+// Garante que firebase foi carregado
+if (!firebase.apps.length) {
+    console.error("Firebase não inicializado antes do auth-guard!");
 }
 
-const auth = getAuth();
+// Obtém a instância de autenticação
+const auth = firebase.auth();
 
-// Proteger página
-onAuthStateChanged(auth, (user) => {
+// Protege a página
+auth.onAuthStateChanged(user => {
     if (!user) {
+        // Se o usuário NÃO estiver logado, volta para o login
         window.location.href = "index.html";
     }
 });
