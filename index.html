@@ -1,47 +1,22 @@
 <!doctype html>
-<html lang="pt-BR" class="dark">
+<html>
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Control Quality — Login</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    :root { --bg:#0b0b0f; --card:#0f1724; --muted:#94a3b8; --accent:#9b8aff; --purple-600:#7c3aed; }
-    .bg-card { background: var(--card); }
-  </style>
+  <title>ServiceRank - Login</title>
 </head>
-<body class="bg-[color:var(--bg)] text-gray-100 min-h-screen flex items-center justify-center">
-  <div class="w-full max-w-md p-8">
-    <div class="bg-card rounded-2xl p-6 shadow-lg">
-      <div class="mb-6 text-center">
-        <div class="mx-auto w-16 h-16 rounded-full bg-gradient-to-tr from-[color:var(--purple-700)] to-[color:var(--purple-600)] flex items-center justify-center text-2xl font-bold">CQ</div>
-        <h1 class="mt-4 text-2xl font-semibold">Control Quality</h1>
-        <p class="text-sm text-[color:var(--muted)] mt-1">A voz do consumidor, respostas reais.</p>
-      </div>
+<body>
+  <h1>ServiceRank - Login</h1>
+  <form id="loginForm">
+    <input id="email" type="email" placeholder="Email" required />
+    <input id="password" type="password" placeholder="Senha" required />
+    <button type="submit">Entrar</button>
+  </form>
+  <p>Ou <a href="signup.html">criar conta</a></p>
 
-      <form id="loginForm" class="space-y-4">
-        <div>
-          <label class="text-sm text-[color:var(--muted)]">E-mail</label>
-          <input id="email" type="email" required class="mt-1 w-full px-4 py-2 rounded-lg bg-[#09101a]" />
-        </div>
-        <div>
-          <label class="text-sm text-[color:var(--muted)]">Senha</label>
-          <input id="senha" type="password" required class="mt-1 w-full px-4 py-2 rounded-lg bg-[#09101a]" />
-        </div>
-
-        <button type="submit" class="w-full py-3 rounded-lg bg-[color:var(--purple-600)]">Entrar</button>
-
-        <div class="flex items-center justify-between text-sm mt-2">
-          <a href="signup.html" class="text-[color:var(--accent)]">Criar conta</a>
-          <a href="#" id="skipBtn" class="text-[color:var(--muted)]">Testar sem login</a>
-        </div>
-      </form>
-    </div>
-
-    <p class="text-xs text-center text-[color:var(--muted)] mt-4">Versão MVP — Control Quality</p>
-  </div>
-
-<script type="module" src="firebase.js"></script>
-<script type="module" src="app.firebase.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="app.firebase.js"></script>
+  <script src="index.js"></script>
 </body>
 </html>

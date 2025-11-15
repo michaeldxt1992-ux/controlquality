@@ -1,26 +1,15 @@
 <!doctype html>
-<html lang="pt-BR" class="dark">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Painel — Empresa</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>:root{--bg:#0b0b0f;--card:#0f1724;--muted:#94a3b8;--accent:#9b8aff;--purple:#7c3aed}</style>
-</head>
-<body class="bg-[color:var(--bg)] min-h-screen text-gray-100">
-  <header class="bg-[color:var(--card)] p-4 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[color:var(--purple)] to-[color:var(--accent)] flex items-center justify-center font-bold">CQ</div>
-      <div class="font-semibold">Painel da Empresa</div>
-    </div>
-    <div><a href="index.html" class="text-[color:var(--muted)]">Sair</a></div>
-  </header>
-
-  <main class="p-4">
-    <h2 class="text-lg font-semibold mb-4">Reclamações recebidas</h2>
-    <div id="companyList" class="space-y-4"></div>
-  </main>
-<script type="module" src="firebase.js"></script>
-<script type="module" src="app.firebase.js"></script>
+<html>
+<head><meta charset="utf-8"/><title>Painel Empresa</title></head>
+<body>
+  <h1>Painel da Empresa</h1>
+  <a href="complaint-list.html">Ver Reclamações</a>
+  <div id="companyInfo"></div>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="app.firebase.js"></script>
+  <script src="auth-guard.js"></script>
+  <script src="company-frontend.js"></script>
 </body>
 </html>
