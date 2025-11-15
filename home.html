@@ -1,81 +1,84 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>CQ - Home</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Control Quality - Home</title>
+  <link rel="stylesheet" href="style.css">
 
-    <style>
-        body {
-            margin: 0;
-            background: #0d0d0d;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-
-        /* NAVBAR */
-        .navbar {
-            width: 100%;
-            background: #111;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 6px #000;
-            position: sticky;
-            top: 0;
-        }
-
-        .nav-left a {
-            color: white;
-            margin-right: 15px;
-            text-decoration: none;
-            font-size: 16px;
-        }
-
-        .nav-right button {
-            background: red;
-            padding: 8px 12px;
-            border: none;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .container {
-            padding: 20px;
-        }
-    </style>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 </head>
 
-<body>
+<body data-guard="true">
 
-    <!-- NAVBAR -->
-    <div class="navbar">
-        <div class="nav-left">
-            <a href="home.html">Início</a>
-            <a href="complaint-create.html">Registrar Reclamação</a>
-            <a href="complaint-list.html">Minhas Reclamações</a>
-        </div>
+  <div class="app">
 
-        <div class="nav-right">
-            <button onclick="logout()">Sair</button>
+    <div class="navbar card">
+      <div class="brand">
+        <div class="logo">CQ</div>
+        <div>
+          <div style="font-weight:800;">Control Quality</div>
+          <div class="small user-email"></div>
         </div>
+      </div>
+
+      <div class="nav-actions">
+        <div class="search small">Menu</div>
+        <button class="btn ghost" onclick="logout()">Sair</button>
+      </div>
     </div>
 
-    <div class="container">
-        <h1>Bem-vindo ao CQ</h1>
-        <p>Você está logado.</p>
+    <div class="grid">
+
+      <!-- MENU LATERAL -->
+      <div class="sidebar card">
+        <ul class="nav-list">
+          <li><a class="active" href="home.html">🏠 Menu principal</a></li>
+          <li><a href="complaint-create.html">➕ Criar reclamação</a></li>
+          <li><a href="complaint-list.html">📋 Minhas reclamações</a></li>
+          <li><a href="company-panel.html">🏢 Painel da empresa</a></li>
+        </ul>
+      </div>
+
+      <!-- CONTEÚDO PRINCIPAL -->
+      <div class="card">
+        <h1 class="h1">Bem-vindo ao Control Quality</h1>
+        <p class="small">Escolha uma das funções abaixo:</p>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:18px;">
+          
+          <div class="card">
+            <h3 style="margin:0;">Criar Reclamação</h3>
+            <p class="small">Registrar uma nova reclamação.</p>
+            <button class="btn" onclick="location.href='complaint-create.html'">Criar</button>
+          </div>
+
+          <div class="card">
+            <h3 style="margin:0;">Minhas Reclamações</h3>
+            <p class="small">Ver status e respostas.</p>
+            <button class="btn" onclick="location.href='complaint-list.html'">Abrir</button>
+          </div>
+
+          <div class="card">
+            <h3 style="margin:0;">Painel da Empresa</h3>
+            <p class="small">Responder clientes.</p>
+            <button class="btn" onclick="location.href='company-panel.html'">Acessar</button>
+          </div>
+
+        </div>
+
+      </div>
     </div>
 
-    <script src="auth-guard.js"></script>
-    <script>
-        function logout() {
-            auth.signOut().then(() => {
-                window.location.href = "index.html";
-            });
-        }
-    </script>
+    <div class="footer">Control Quality • Dark Neon UI</div>
 
+  </div>
+
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
+  <script src="auth-guard.js"></script>
 </body>
 </html>
