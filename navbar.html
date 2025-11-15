@@ -1,0 +1,65 @@
+<style>
+.navbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #101018;
+    border-top: 1px solid #2d2d3a;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 6px;
+    z-index: 999;
+}
+
+.nav-item {
+    color: #aaa;
+    text-align: center;
+    font-size: 13px;
+    text-decoration: none;
+    width: 25%;
+}
+
+.nav-item.active {
+    color: #4c8bff;
+}
+
+.nav-item i {
+    font-size: 22px;
+    margin-bottom: 4px;
+}
+
+body {
+    padding-bottom: 80px; /* espaço para a barra não cobrir conteúdo */
+}
+</style>
+
+<div class="navbar">
+    <a href="home.html" class="nav-item" id="nav-home">
+        <i>🏠</i><br>Home
+    </a>
+
+    <a href="complaint-create.html" class="nav-item" id="nav-create">
+        <i>➕</i><br>Criar
+    </a>
+
+    <a href="complaint-list.html" class="nav-item" id="nav-list">
+        <i>📋</i><br>Reclamações
+    </a>
+
+    <a href="profile.html" class="nav-item" id="nav-profile">
+        <i>👤</i><br>Perfil
+    </a>
+</div>
+
+<script>
+    // Detecta qual página está ativa e colore o item certo
+    const page = location.pathname.split("/").pop();
+
+    if (page.includes("home")) document.getElementById("nav-home").classList.add("active");
+    if (page.includes("create") || page.includes("complaint-create"))
+        document.getElementById("nav-create").classList.add("active");
+    if (page.includes("list") || page.includes("complaint-list"))
+        document.getElementById("nav-list").classList.add("active");
+    if (page.includes("profile")) document.getElementById("nav-profile").classList.add("active");
+</script>
