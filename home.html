@@ -1,87 +1,84 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <title>Home - CQ</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Control Quality</title>
 
     <style>
         body {
-            background: #0d0d18;
-            color: white;
             font-family: Arial, sans-serif;
-            padding: 25px;
-            text-align: center;
+            background-color: #0f0f14;
+            color: white;
+            margin: 0;
+            padding: 20px;
         }
 
-        h2 {
-            margin-bottom: 30px;
+        .title {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #ccc;
+            margin-bottom: 25px;
         }
 
         .menu {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
 
-        .btn {
-            background: #131327;
-            padding: 18px;
-            border-radius: 12px;
-            color: white;
-            font-size: 18px;
+        .menu a {
             text-decoration: none;
-            border: 1px solid #2d2d50;
-            transition: 0.2s;
-        }
-
-        .btn:hover {
-            background: #1d1d3b;
-        }
-
-        .logout {
-            background: #ff4141;
-            border: none;
-            margin-top: 40px;
-            padding: 15px;
+            color: white;
+            background-color: #1a1a1f;
+            padding: 14px;
             border-radius: 10px;
             font-size: 18px;
-            color: white;
+            text-align: center;
+            border: 1px solid #333;
+        }
+
+        .menu a:hover {
+            background-color: #27272f;
+        }
+
+        button {
+            margin-top: 30px;
             width: 100%;
+            padding: 15px;
+            background-color: #ff4444;
+            color: white;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+        }
+
+        button:hover {
+            background-color: #cc0000;
         }
     </style>
 </head>
 
 <body>
 
-    <h2>Bem-vindo ao Control Quality</h2>
-    <p id="user-email" style="opacity: 0.7;"></p>
+    <div class="title">Bem-vindo ao CQ</div>
+    <div class="subtitle">Selecione uma opção no menu:</div>
 
     <div class="menu">
-        <a class="btn" href="complaint-create.html">Criar Reclamação</a>
-        <a class="btn" href="complaint-list.html">Minhas Reclamações</a>
-        <a class="btn" href="company-login.html">Sou uma Empresa</a>
-        <a class="btn" href="profile.html">Meu Perfil (em breve)</a>
+        <a href="complaint-create.html">📝 Criar Reclamação</a>
+        <a href="complaint-list.html">📋 Minhas Reclamações</a>
+        <a href="company.html">🏢 Área da Empresa</a>
     </div>
 
-    <button class="logout" onclick="logout()">Sair</button>
-
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <button onclick="logout()">Sair</button>
 
     <script src="firebase.js"></script>
     <script src="auth-guard.js"></script>
-
     <script>
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById("user-email").textContent =
-                    "Logado como: " + user.email;
-            }
-        });
-
         function logout() {
             auth.signOut().then(() => {
                 window.location.href = "index.html";
