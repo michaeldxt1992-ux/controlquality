@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detalhes da Reclamação — Control Quality</title>
+
+    <!-- Estilo Visual A -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #111827;
+            font-family: Arial, sans-serif;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+        }
+
+        header h1 {
+            color: #a855f7;
+        }
+
+        .card {
+            background: #1f2937;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .label {
+            font-size: 13px;
+            opacity: .6;
+            margin-top: 10px;
+        }
+
+        .value {
+            font-size: 16px;
+            margin-top: 3px;
+        }
+
+        .back-btn {
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #a855f7;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Detalhes da Reclamação</h1>
+        </header>
+
+        <div class="card">
+            <div class="label">Empresa</div>
+            <div class="value" id="detailCompany">Carregando...</div>
+
+            <div class="label">Título</div>
+            <div class="value" id="detailTitle">Carregando...</div>
+
+            <div class="label">Descrição</div>
+            <div class="value" id="detailDescription">Carregando...</div>
+
+            <div class="label">Resposta da Empresa</div>
+            <div class="value" id="detailResponse">Nenhuma resposta ainda.</div>
+        </div>
+
+        <button class="back-btn" onclick="window.location.href='complaint-list.html'">
+            Voltar
+        </button>
+    </div>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2TRtp8wXdvP4eMzrxjmWlKQcxPNhgRS",
+            authDomain: "controlquality-28980.firebaseapp.com",
+            projectId: "controlquality-28980",
+            storageBucket: "controlquality-28980.appspot.com",
+            messagingSenderId: "414942674144",
+            appId: "1:414942674144:web:9cd7527cd8e725f1c4f9ef"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // === LER A RECLAMAÇÃO SELECIONADA ===
+        async function loadDetails() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get("id");
+
+            if (!id) {
+                alert("Erro: Reclamação inválida.");
+                return;
+            }
+
+            const ref = doc(db, "complaints", id);
+            const snap = await getDoc(ref);
+
+            if (!snap.exists()) {
+                alert("Erro ao carregar dados.");
+                return;
+            }
+
+            const data = snap.data();
+
+            document.getElementById("detailCompany").textContent = data.company;
+            document.getElementById("detailTitle").textContent = data.title;
+            document.getElementById("detailDescription").textContent = data.description;
+            document.getElementById("detailResponse").textContent = data.response ?? "Nenhuma resposta ainda.";
+        }
+
+        loadDetails();
+    </script>
+</body>
+</html>
