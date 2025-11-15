@@ -1,137 +1,61 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Criar Reclamação - Control Quality</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Reclamação</title>
 
     <style>
         body {
-            margin: 0;
-            background: #0f0f17;
-            font-family: Arial, sans-serif;
-            color: #fff;
-        }
-
-        header {
-            background: #161623;
-            padding: 18px;
-            text-align: center;
-            font-size: 20px;
-            border-bottom: 1px solid #222a36;
-        }
-
-        .container {
+            background: #0d0d18;
+            color: white;
+            font-family: Arial;
             padding: 20px;
-        }
-
-        label {
-            display: block;
-            margin-top: 12px;
-            margin-bottom: 6px;
-            opacity: 0.8;
         }
 
         input, textarea {
             width: 100%;
             padding: 12px;
-            background: #0f1620;
-            border: 1px solid #222a36;
+            margin-top: 10px;
             border-radius: 6px;
-            color: #fff;
-            outline: none;
-            font-size: 15px;
-        }
-
-        textarea {
-            height: 120px;
-            resize: none;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            background: #8b5cf6;
             border: none;
+            background: #131327;
             color: white;
-            font-size: 17px;
-            border-radius: 6px;
+        }
+
+        button {
             margin-top: 20px;
-            cursor: pointer;
+            width: 100%;
+            background: #835CFF;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
 
-<header>Criar Reclamação</header>
+    <h2>Criar Reclamação</h2>
 
-<div class="container">
+    <input id="company" placeholder="Empresa">
+    <input id="title" placeholder="Título da Reclamação">
+    <textarea id="description" placeholder="Descrição"></textarea>
 
-    <label>Empresa</label>
-    <input id="empresa" placeholder="Ex: Claro, Vivo, Net...">
+    <button onclick="submitComplaint()">Enviar Reclamação</button>
 
-    <label>Título da Reclamação</label>
-    <input id="titulo" placeholder="Título resumido">
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-    <label>Descrição</label>
-    <textarea id="descricao" placeholder="Explique o problema"></textarea>
+    <script src="firebase.js"></script>
 
-    <button class="btn" onclick="enviar()">Enviar Reclamação</button>
-
-</div>
-
-<!-- 🔥 Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
-<script>
-const firebaseConfig = {
-    apiKey: "AIzaSyB2TRpt8wXdVp4AeMzrxjmjWkQCxPNhgRS",
-    authDomain: "controlquality-28980.firebaseapp.com",
-    projectId: "controlquality-28980",
-    storageBucket: "controlquality-28980.appspot.com",
-    messagingSenderId: "414924674164",
-    appId: "1:414924674164:web:9cd7527cd8e725f1c4f9ef"
-};
-
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-</script>
-
-<script>
-function enviar() {
-    const empresa = document.getElementById("empresa").value;
-    const titulo = document.getElementById("titulo").value;
-    const descricao = document.getElementById("descricao").value;
-
-    if (!empresa || !titulo || !descricao) {
-        alert("Preencha todos os campos!");
-        return;
-    }
-
-    const user = auth.currentUser;
-
-    db.collection("reclamacoes").add({
-        empresa: empresa,
-        titulo: titulo,
-        descricao: descricao,
-        uid: user ? user.uid : null,
-        email: user ? user.email : "anonimo",
-        data: new Date(),
-        status: "aberto"
-    })
-    .then(() => {
-        alert("Reclamação enviada com sucesso!");
-        window.location.href = "complaint-list.html";
-    })
-    .catch((err) => {
-        alert("Erro ao enviar reclamação: " + err.message);
-    });
-}
-</script>
+    <script src="auth-guard.js"></script>
+    <script src="auth.js"></script>
+    <script src="create.js"></script>
 
 </body>
 </html>
