@@ -73,3 +73,4 @@ async function loadRecentComplaints() {
         list.appendChild(div);
     });
 }
+<script type="module" src="home.js"></script>
