@@ -1,140 +1,129 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responder Reclamação - CQ</title>
+    <title>Responder Reclamação</title>
 
     <style>
         body {
-            background: #0d0d18;
+            background-color: #0f0f14;
             color: white;
-            padding: 20px;
             font-family: Arial, sans-serif;
+            padding: 20px;
         }
 
-        .card {
-            background: #131327;
-            padding: 20px;
+        h2 {
+            margin-bottom: 5px;
+        }
+
+        .box {
+            background-color: #1b1b22;
+            padding: 15px;
             border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
         }
 
         textarea {
             width: 100%;
-            padding: 12px;
-            border-radius: 6px;
+            height: 130px;
+            padding: 10px;
+            border-radius: 8px;
             border: none;
-            margin-top: 15px;
-            background: #1c1c38;
+            background-color: #222;
             color: white;
         }
 
         button {
-            width: 100%;
             padding: 12px;
-            background: #835CFF;
+            width: 100%;
+            background-color: #0066ff;
+            color: white;
             border: none;
             border-radius: 8px;
-            margin-top: 20px;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: #0044cc;
         }
 
         .back {
-            background: #444;
+            background-color: #555;
+            margin-top: 10px;
         }
     </style>
 </head>
-
 <body>
 
-<h2>Responder Reclamação</h2>
+    <h2>Responder Reclamação</h2>
 
-<div id="content">
-    Carregando reclamação...
-</div>
+    <div id="complaintBox" class="box">
+        Carregando reclamação...
+    </div>
 
-<button class="back" onclick="window.location.href='company.html'">Voltar</button>
+    <h3>Sua resposta:</h3>
+    <textarea id="response" placeholder="Digite a resposta da empresa..."></textarea>
 
-<!-- Firebase 8 -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <button onclick="sendResponse()">Enviar Resposta</button>
+    <button class="back" onclick="goBack()">Voltar</button>
 
-<script src="firebase.js"></script>
+    <!-- Firebase -->
+    <script src="firebase.js"></script>
+    <script src="auth-guard.js"></script>
 
-<script>
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const complaintId = params.get("id");
 
-if (!id) {
-    document.getElementById("content").innerHTML =
-        "<p style='opacity:0.7;'>ID da reclamação não encontrado.</p>";
-}
+        let currentComplaint = null;
 
-// Carregar detalhes
-db.collection("complaints").doc(id).get().then(doc => {
-    if (!doc.exists) {
-        document.getElementById("content").innerHTML =
-            "<p style='opacity:0.7;'>Reclamação não existe.</p>";
-        return;
-    }
+        function loadComplaint() {
+            db.collection("complaints").doc(complaintId).get().then(doc => {
+                if (!doc.exists) {
+                    document.getElementById("complaintBox").innerHTML = "<p>Reclamação não encontrada.</p>";
+                    return;
+                }
 
-    const c = doc.data();
+                currentComplaint = doc.data();
 
-    document.getElementById("content").innerHTML = `
-        <div class="card">
-            <h3>${c.title}</h3>
-            <p><strong>Empresa:</strong> ${c.company}</p>
-            <p><strong>Descrição:</strong> ${c.description}</p>
+                document.getElementById("complaintBox").innerHTML = `
+                    <p><strong>Empresa:</strong> ${currentComplaint.company}</p>
+                    <p><strong>Título:</strong> ${currentComplaint.title}</p>
+                    <p><strong>Descrição:</strong></p>
+                    <p>${currentComplaint.description}</p>
+                    <p style="opacity: 0.6; margin-top: 10px;">
+                        Criado em: ${new Date(currentComplaint.createdAt).toLocaleString("pt-BR")}
+                    </p>
+                `;
+            });
+        }
 
-            <h4>Resposta atual:</h4>
-            <p>${c.resposta || "<i>Sem resposta ainda</i>"}</p>
+        function sendResponse() {
+            const text = document.getElementById("response").value.trim();
 
-            <textarea id="resposta" rows="4" placeholder="Digite sua resposta..."></textarea>
-            <button onclick="enviarResposta()">Enviar Resposta</button>
-            <button onclick="marcarResolvida()">Marcar como Resolvida</button>
-        </div>
-    `;
-});
+            if (text.length === 0) {
+                alert("Digite uma resposta antes de enviar!");
+                return;
+            }
 
-// Função para responder reclamação
-function enviarResposta() {
-    const resposta = document.getElementById("resposta").value.trim();
+            db.collection("complaints").doc(complaintId).update({
+                response: text,
+                status: "Respondida",
+                respondedAt: Date.now()
+            }).then(() => {
+                alert("Resposta enviada com sucesso!");
+                window.location.href = "company.html";
+            });
+        }
 
-    if (!resposta) {
-        alert("Digite a resposta antes de enviar!");
-        return;
-    }
+        function goBack() {
+            window.location.href = "company.html";
+        }
 
-    db.collection("complaints")
-      .doc(id)
-      .update({
-          resposta: resposta,
-          status: "respondida"
-      })
-      .then(() => {
-          alert("Resposta enviada!");
-          window.location.href = "company.html";
-      })
-      .catch(err => alert("Erro: " + err));
-}
-
-// Função para marcar resolvida
-function marcarResolvida() {
-    db.collection("complaints")
-      .doc(id)
-      .update({
-          status: "resolvida"
-      })
-      .then(() => {
-          alert("Reclamação marcada como resolvida!");
-          window.location.href = "company.html";
-      });
-}
-</script>
+        loadComplaint();
+    </script>
 
 </body>
 </html>
