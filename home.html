@@ -4,43 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Control Quality</title>
+
     <style>
         body {
             background: #0d0d18;
             color: white;
+            font-family: Arial, sans-serif;
             padding: 25px;
-            font-family: Arial;
+            text-align: center;
         }
-        button {
-            padding: 10px 18px;
-            border: none;
-            background: red;
+
+        h2 {
+            margin-bottom: 30px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            background: #131327;
+            padding: 18px;
+            border-radius: 12px;
             color: white;
-            border-radius: 6px;
-            cursor: pointer;
+            font-size: 18px;
+            text-decoration: none;
+            border: 1px solid #2d2d50;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            background: #1d1d3b;
+        }
+
+        .logout {
+            background: #ff4141;
+            border: none;
+            margin-top: 40px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 18px;
+            color: white;
+            width: 100%;
         }
     </style>
 </head>
+
 <body>
 
-    <h1>Bem-vindo ao CQ</h1>
-    <p>Você está logado.</p>
+    <h2>Bem-vindo ao Control Quality</h2>
+    <p id="user-email" style="opacity: 0.7;"></p>
 
-    <button onclick="logout()">Sair</button>
+    <div class="menu">
+        <a class="btn" href="complaint-create.html">Criar Reclamação</a>
+        <a class="btn" href="complaint-list.html">Minhas Reclamações</a>
+        <a class="btn" href="company-login.html">Sou uma Empresa</a>
+        <a class="btn" href="profile.html">Meu Perfil (em breve)</a>
+    </div>
 
-    <!-- Firebase SDK 8 -->
+    <button class="logout" onclick="logout()">Sair</button>
+
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-    <!-- Configuração Firebase -->
     <script src="firebase.js"></script>
-
-    <!-- Guard de rota -->
     <script src="auth-guard.js"></script>
 
-    <!-- Logout -->
     <script>
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById("user-email").textContent =
+                    "Logado como: " + user.email;
+            }
+        });
+
         function logout() {
             auth.signOut().then(() => {
                 window.location.href = "index.html";
