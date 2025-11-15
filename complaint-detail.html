@@ -1,117 +1,100 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+<!doctype html>
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes da Reclamação</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Detalhes da Reclamação</title>
+  <link rel="stylesheet" href="style.css">
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #0f0f14;
-            color: white;
-            padding: 20px;
-        }
-
-        .title {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .box {
-            background-color: #1b1b22;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border: 1px solid #333;
-        }
-
-        .label {
-            color: #bbb;
-            font-size: 14px;
-        }
-
-        .value {
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-
-        .back-btn {
-            margin-top: 25px;
-            padding: 12px;
-            width: 100%;
-            background-color: #4444ff;
-            color: white;
-            font-size: 18px;
-            border: none;
-            border-radius: 10px;
-        }
-
-        .back-btn:hover {
-            background-color: #2222ff;
-        }
-    </style>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 </head>
-<body>
 
-    <div class="title">Detalhes da Reclamação</div>
+<body data-guard="true">
 
-    <div id="details" class="box">
-        <div class="label">Empresa:</div>
-        <div class="value" id="company">Carregando...</div>
+  <div class="app">
 
-        <div class="label">Título:</div>
-        <div class="value" id="title"></div>
+    <!-- Navbar -->
+    <div class="navbar card">
+      <div class="brand">
+        <div class="logo">CQ</div>
+        <div>
+          <div style="font-weight:800;">Detalhes</div>
+          <div class="small user-email"></div>
+        </div>
+      </div>
 
-        <div class="label">Descrição:</div>
-        <div class="value" id="description"></div>
-
-        <div class="label">Status:</div>
-        <div class="value" id="status"></div>
-
-        <div class="label">Resposta da Empresa:</div>
-        <div class="value" id="response">Nenhuma resposta ainda.</div>
+      <div class="nav-actions">
+        <button class="btn ghost" onclick="location.href='complaint-list.html'">Voltar</button>
+      </div>
     </div>
 
-    <button class="back-btn" onclick="goBack()">Voltar</button>
+    <div class="card" style="max-width:760px; margin:auto">
 
-    <!-- Firebase + Auth Guard -->
-    <script src="firebase.js"></script>
-    <script src="auth-guard.js"></script>
-    <script>
-        // Obter ID da URL
-        const params = new URLSearchParams(window.location.search);
-        const complaintId = params.get("id");
+      <h1 class="h1">Reclamação</h1>
 
-        if (!complaintId) {
-            alert("ID da reclamação não encontrado.");
-            window.location.href = "complaint-list.html";
-        }
+      <div id="detail" class="small" style="margin-top:12px;">
+        Carregando...
+      </div>
 
-        // Buscar dados da reclamação
-        db.collection("complaints").doc(complaintId).get().then(doc => {
-            if (!doc.exists) {
-                alert("Reclamação não encontrada.");
-                window.location.href = "complaint-list.html";
-                return;
-            }
+    </div>
 
-            const data = doc.data();
+  </div>
 
-            document.getElementById("company").innerText = data.company;
-            document.getElementById("title").innerText = data.title;
-            document.getElementById("description").innerText = data.description;
-            document.getElementById("status").innerText = data.status || "Aguardando resposta";
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
+  <script src="auth-guard.js"></script>
+  <script src="app.js"></script>
 
-            if (data.response) {
-                document.getElementById("response").innerText = data.response;
-            }
-        });
+  <script>
+    const params = new URLSearchParams(location.search);
+    const id = params.get("id");
 
-        function goBack() {
-            window.location.href = "complaint-list.html";
-        }
-    </script>
+    async function loadDetail() {
+      if (!id) {
+        document.getElementById("detail").innerHTML = "ID inválido.";
+        return;
+      }
+
+      const doc = await db.collection("complaints").doc(id).get();
+      if (!doc.exists) {
+        document.getElementById("detail").innerHTML = "Reclamação não encontrada.";
+        return;
+      }
+
+      const data = doc.data();
+
+      const dt = data.createdAt
+        ? new Date(data.createdAt.seconds * 1000).toLocaleString()
+        : "—";
+
+      document.getElementById("detail").innerHTML = `
+        <strong>${data.title}</strong><br><br>
+
+        <div class="small"><b>Empresa:</b> ${data.company}</div>
+        <div class="small"><b>Status:</b> 
+          <span class="badge ${data.status === 'open' ? 'open' : 'closed'}">
+            ${data.status === 'open' ? 'Aberta' : 'Fechada'}
+          </span>
+        </div>
+        <div class="small"><b>Criado em:</b> ${dt}</div>
+
+        <hr style="border-color:rgba(255,255,255,0.08); margin:18px 0;">
+
+        <div class="small"><b>Descrição:</b></div>
+        <p>${data.description}</p>
+
+        <hr style="border-color:rgba(255,255,255,0.08); margin:18px 0;">
+
+        <div class="small"><b>Resposta da empresa:</b></div>
+        <p>${data.response ? data.response : '<i>(Ainda sem resposta)</i>'}</p>
+      `;
+    }
+
+    loadDetail();
+  </script>
 
 </body>
 </html>
