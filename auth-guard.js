@@ -1,15 +1,21 @@
-// =======================
-// PROTEÇÃO DE ROTAS
-// =======================
+// auth-guard.js
+// Protege páginas que precisam de login
+// Ativa automaticamente quando <body data-guard="true">
 
-auth.onAuthStateChanged(user => {
-    const pagina = window.location.pathname;
+(function(){
+  // Verifica se a página pediu proteção
+  const guard = document.body.dataset.guard === "true";
+  if (!guard) return;
 
-    // Se usuário NÃO está logado
+  // Se guard está ativado, verifica usuário
+  auth.onAuthStateChanged(user => {
     if (!user) {
-        if (!pagina.includes("index.html") && !pagina.includes("signup.html")) {
-            window.location.href = "index.html";
-        }
-        return;
+      // Redireciona para login
+      window.location.href = "index.html";
+    } else {
+      // Preenche email (opcional)
+      const items = document.querySelectorAll(".user-email");
+      items.forEach(el => el.textContent = user.email);
     }
-});
+  });
+})();
