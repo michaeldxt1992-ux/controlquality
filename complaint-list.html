@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Reclamações - CQ</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0d0d18;
+            color: white;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: #131327;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            background: #835CFF;
+            border: none;
+            color: white;
+            padding: 10px;
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        a {
+            color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Minhas Reclamações</h2>
+
+    <div id="list"></div>
+
+    <button class="btn" onclick="window.location.href='home.html'">Voltar</button>
+
+    <!-- Firebase SDK 8 -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <!-- Config do Firebase -->
+    <script src="firebase.js"></script>
+
+    <!-- Guard de login -->
+    <script src="auth-guard.js"></script>
+
+    <script>
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                loadComplaints(user.uid);
+            }
+        });
+
+        function loadComplaints(uid) {
+            db.collection("complaints")
+              .where("userId", "==", uid)
+              .orderBy("createdAt", "desc")
+              .get()
+              .then(snapshot => {
+
+                if (snapshot.empty) {
+                    document.querySelector("#list").innerHTML =
+                        "<p style='text-align:center; opacity:0.7;'>Nenhuma reclamação encontrada.</p>";
+                    return;
+                }
+
+                let html = "";
+                snapshot.forEach(doc => {
+                    let c = doc.data();
+
+                    html += `
+                        <div class="card">
+                            <h3>${c.title}</h3>
+                            <p><strong>Empresa:</strong> ${c.company}</p>
+                            <p><strong>Descrição:</strong> ${c.description}</p>
+                            <p><strong>Data:</strong> ${new Date(c.createdAt).toLocaleString()}</p>
+
+                            <a href="complaint-detail.html?id=${doc.id}">Ver Detalhes</a>
+                        </div>
+                    `;
+                });
+
+                document.querySelector("#list").innerHTML = html;
+              });
+        }
+    </script>
+
+</body>
+</html>
