@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel da Empresa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body { margin:0; background:#0d0d0d; color:white; font-family:Arial; }
+        .navbar { background:#111; padding:12px; display:flex; justify-content:space-between; }
+        .nav-left a { color:white; margin-right:15px; text-decoration:none; }
+        .nav-right button { background:red; padding:8px 12px; border:none; color:white; border-radius:5px; }
+        .container { padding:20px; }
+        .card {
+            background:#1a1a1a; padding:15px; margin-bottom:10px;
+            border-radius:8px; border-left:4px solid orange;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <div class="nav-left">
+            <a href="company-panel.html">Reclamações</a>
+        </div>
+        <div class="nav-right">
+            <button onclick="logout()">Sair</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Painel da Empresa</h2>
+        <div id="complaints"></div>
+    </div>
+
+    <script src="auth-guard.js"></script>
+    <script src="app.js"></script>
+
+    <script>
+        function logout() { auth.signOut().then(()=>window.location.href="index.html"); }
+    </script>
+
+</body>
+</html>
