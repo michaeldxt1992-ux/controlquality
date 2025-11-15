@@ -13,13 +13,15 @@
 
     <button onclick="logout()">Sair</button>
 
-    <!-- Firebase -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
+    <!-- Arquivos do projeto -->
     <script src="firebase.js"></script>
     <script src="auth-guard.js"></script>
+    <script src="app.js"></script>
 
     <script>
         function logout() {
@@ -27,23 +29,7 @@
                 window.location.href = "index.html";
             });
         }
-    <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
-<!-- Arquivos do projeto -->
-<script src="firebase.js"></script>
-<script src="auth-guard.js"></script>
-<script src="app.js"></script>
-
-<script>
-    function logout() {
-        auth.signOut().then(() => {
-            window.location.href = "index.html";
-        });
-    }
-</script>
+    </script>
 
 </body>
 </html>
