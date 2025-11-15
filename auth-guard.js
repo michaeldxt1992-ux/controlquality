@@ -1,13 +1,15 @@
-// ================================
+// =======================
 // PROTEÇÃO DE ROTAS
-// ================================
-auth.onAuthStateChanged((user) => {
-    // Se o usuário NÃO estiver logado
-    if (!user) {
-        if (!window.location.pathname.includes("index.html") &&
-            !window.location.pathname.includes("signup.html")) {
+// =======================
 
-            window.location.href = "index.html"; // redireciona
+auth.onAuthStateChanged(user => {
+    const pagina = window.location.pathname;
+
+    // Se usuário NÃO está logado
+    if (!user) {
+        if (!pagina.includes("index.html") && !pagina.includes("signup.html")) {
+            window.location.href = "index.html";
         }
+        return;
     }
 });
