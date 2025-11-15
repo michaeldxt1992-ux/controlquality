@@ -1,6 +1,7 @@
 // ================================
 // CONFIGURAÇÃO FIREBASE (SDK 8)
 // ================================
+
 var firebaseConfig = {
     apiKey: "AIzaSyB2TRTp8vwXdvP4eMzrxmjmWKQcxPNhgRs",
     authDomain: "controlquality-28980.firebaseapp.com",
@@ -13,6 +14,6 @@ var firebaseConfig = {
 // Inicializar
 firebase.initializeApp(firebaseConfig);
 
-// Exportar global
+// Exportar globalmente
 window.auth = firebase.auth();
 window.db = firebase.firestore();
