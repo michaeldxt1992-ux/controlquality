@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Empresa - CQ</title>
+
+    <style>
+        body {
+            background: #0d0d18;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: #131327;
+            padding: 30px;
+            border-radius: 12px;
+            width: 340px;
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            background: #1c1c38;
+            color: white;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: #035CFF;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        a {
+            color: #ccc;
+            margin-top: 10px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>Login Empresa</h2>
+
+    <input id="email" type="email" placeholder="E-mail da empresa">
+    <input id="password" type="password" placeholder="Senha">
+
+    <button onclick="companyLogin()">Entrar</button>
+    <a href="company-signup.html">Criar conta empresarial</a>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script src="firebase.js"></script>
+
+<script>
+function companyLogin() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    auth.signInWithEmailAndPassword(email, password)
+        .then(async cred => {
+
+            const uid = cred.user.uid;
+
+            // Verifica se é empresa
+            const empresaDoc = await db.collection("empresas").doc(uid).get();
+
+            if (!empresaDoc.exists) {
+                alert("Esta conta não é de empresa!");
+                auth.signOut();
+                return;
+            }
+
+            window.location.href = "company.html";
+        })
+        .catch(err => {
+            alert("Erro ao entrar: " + err.message);
+        });
+}
+</script>
+
+</body>
+</html>
