@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reclamações - Control Quality</title>
+
+    <style>
+        body {
+            background: #0d0d18;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h2 {
+            font-size: 28px;
+        }
+
+        a.button {
+            display: block;
+            background: #035CFF;
+            padding: 14px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Reclamações</h2>
+<p>Escolha uma opção abaixo:</p>
+
+<a href="complaint-create.html" class="button">Criar Reclamação</a>
+<a href="complaint-list.html" class="button">Minhas Reclamações</a>
+<a href="home.html" class="button" style="background:#444;">Voltar</a>
+
+<!-- Firebase -->
+<script src="firebase.js"></script>
+
+<!-- Proteção -->
+<script src="auth-guard.js"></script>
+
+</body>
+</html>
