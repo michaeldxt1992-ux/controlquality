@@ -81,6 +81,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+const companyRoutes = require('./routes/company');
+app.use('/company', companyRoutes);
 
 
   // ================================================================
