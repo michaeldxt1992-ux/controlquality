@@ -75,7 +75,7 @@
         <p style="margin-top:20px; opacity:0.6;">Versão MVP — Control Quality</p>
     </div>
 
-    <!-- Firebase SDK v8 -->
+    <!-- Firebase SDK v8 (carregamento único e correto) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -83,14 +83,10 @@
     <!-- Config Firebase -->
     <script src="firebase.js"></script>
 
-    <!-- Auth Guard (correto) -->
-    <script src="auth-guard.js"></script>
+    <!-- Lógica de login -->
+    <script src="auth.js"></script>
 
     <script>
-        function login() {
-            authGuard.login();  // chama a função correta
-        }
-
         function testWithoutLogin() {
             window.location.href = "home.html";
         }
