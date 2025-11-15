@@ -1,45 +1,73 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Painel da Empresa</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Painel da Empresa</title>
+  <link rel="stylesheet" href="style.css">
 
-    <style>
-        body { margin:0; background:#0d0d0d; color:white; font-family:Arial; }
-        .navbar { background:#111; padding:12px; display:flex; justify-content:space-between; }
-        .nav-left a { color:white; margin-right:15px; text-decoration:none; }
-        .nav-right button { background:red; padding:8px 12px; border:none; color:white; border-radius:5px; }
-        .container { padding:20px; }
-        .card {
-            background:#1a1a1a; padding:15px; margin-bottom:10px;
-            border-radius:8px; border-left:4px solid orange;
-        }
-    </style>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 </head>
 
-<body>
+<body data-guard="true">
 
-    <div class="navbar">
-        <div class="nav-left">
-            <a href="company-panel.html">Reclamações</a>
+  <div class="app">
+
+    <!-- NAVBAR -->
+    <div class="navbar card">
+      <div class="brand">
+        <div class="logo">CQ</div>
+        <div>
+          <div style="font-weight:800;">Painel da Empresa</div>
+          <div class="small user-email"></div>
         </div>
-        <div class="nav-right">
-            <button onclick="logout()">Sair</button>
-        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn ghost" onclick="location.href='home.html'">Voltar</button>
+      </div>
     </div>
 
-    <div class="container">
-        <h2>Painel da Empresa</h2>
-        <div id="complaints"></div>
+    <!-- LAYOUT -->
+    <div class="grid">
+
+      <div class="sidebar card">
+        <h4 class="small">Empresa</h4>
+        <p class="small">Reclamações recebidas</p>
+      </div>
+
+      <div class="card">
+        <h1 class="h1">Reclamações</h1>
+
+        <div id="company-list" style="margin-top:16px;">
+          Carregando...
+        </div>
+      </div>
+
     </div>
 
-    <script src="auth-guard.js"></script>
-    <script src="app.js"></script>
+  </div>
 
-    <script>
-        function logout() { auth.signOut().then(()=>window.location.href="index.html"); }
-    </script>
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
+  <script src="auth-guard.js"></script>
+  <script src="app.js"></script>
+
+  <script>
+    // 🔥 Aqui você define o nome da empresa
+    const companyId = "Empresa X";  
+
+    document.addEventListener("DOMContentLoaded", () => {
+      app.loadAllComplaintsForCompany(companyId);
+    });
+
+    window.openResponse = function (id) {
+      window.location.href = "company-response.html?id=" + id;
+    }
+  </script>
 
 </body>
 </html>
