@@ -1,4 +1,8 @@
-// Função de Login
+// ===============================================
+// LÓGICA DE LOGIN E CRIAÇÃO DE CONTA (AUTENTICAÇÃO)
+// ===============================================
+
+// Login
 function login() {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
@@ -10,14 +14,14 @@ function login() {
 
     auth.signInWithEmailAndPassword(email, password)
         .then(() => {
-            window.location.href = "home.html"; // login OK
+            window.location.href = "home.html";
         })
         .catch(error => {
             alert("Erro ao entrar: " + error.message);
         });
 }
 
-// Função para criar conta
+// Criar conta
 function signup() {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
