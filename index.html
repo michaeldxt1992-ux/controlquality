@@ -1,101 +1,71 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Control Quality - Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Quality - Início</title>
 
     <style>
         body {
-            margin: 0;
-            background: #0d0d18;
+            background-color: #0f0f14;
+            color: white;
             font-family: Arial, sans-serif;
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .card {
-            background: #131327;
-            padding: 35px;
-            width: 350px;
-            border-radius: 12px;
             text-align: center;
-            box-shadow: 0px 0px 18px rgba(0,0,0,0.4);
+            padding: 40px 20px;
         }
 
-        input {
-            width: 100%;
-            padding: 11px;
-            margin: 10px 0;
-            border-radius: 6px;
-            border: none;
-            outline: none;
-            background: #1c1c38;
-            color: white;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 18px;
-            border: none;
-            border-radius: 6px;
-            background: #035cff;
-            color: white;
+        .logo {
+            font-size: 32px;
             font-weight: bold;
-            cursor: pointer;
+            margin-bottom: 5px;
         }
 
-        a {
-            color: #ccc;
-            font-size: 14px;
-            display: inline-block;
-            margin-top: 10px;
+        .subtitle {
+            color: #bbb;
+            margin-bottom: 40px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            background: #1a1a1f;
+            padding: 15px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            border: 1px solid #333;
+        }
+
+        .btn:hover {
+            background-color: #27272f;
+        }
+
+        .footer {
+            color: #777;
+            margin-top: 50px;
+            font-size: 13px;
         }
     </style>
 </head>
-
 <body>
 
-    <div class="card">
-        <h2>CQ</h2>
-        <p>A voz do consumidor, respostas reais.</p>
+    <div class="logo">Control Quality</div>
+    <div class="subtitle">Como deseja entrar?</div>
 
-        <input id="email" type="email" placeholder="E-mail">
-        <input id="password" type="password" placeholder="Senha">
-
-        <button onclick="login()">Entrar</button>
-
-        <a href="signup.html">Criar conta</a> |
-        <a href="#" onclick="testWithoutLogin()">Testar sem login</a>
-
-        <p style="margin-top:20px; opacity:0.6;">Versão MVP – Control Quality</p>
+    <div class="menu">
+        <a href="login.html" class="btn">👤 Consumidor</a>
+        <a href="company-login.html" class="btn">🏢 Empresa</a>
+        <a href="signup.html" class="btn">📝 Criar Conta</a>
     </div>
 
-    <!-- Firebase SDK 8 -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <div class="footer">
+        © 2025 • CQ - Todos os Direitos Reservados
+    </div>
 
-    <!-- Configuração Firebase -->
-    <script src="./firebase.js"></script>
-
-    <!-- Autenticação -->
-    <script src="./auth.js"></script>
-
-    <!-- Proteção de rotas -->
-    <script src="./auth-guard.js"></script>
-
-    <!-- Lógica do app -->
-    <script src="./app.js"></script>
-
-    <script>
-        function testWithoutLogin() {
-            window.location.href = "home.html";
-        }
-    </script>
 </body>
 </html>
