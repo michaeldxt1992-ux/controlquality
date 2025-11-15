@@ -4,54 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Control Quality</title>
-
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0d0d18;
-            color: white;
-            padding: 25px;
-        }
-
-        button {
-            padding: 10px 18px;
-            background: #835CFF;
-            border: none;
-            border-radius: 6px;
-            color: white;
-            cursor: pointer;
-        }
-
-        a {
-            color: #835CFF;
-        }
-    </style>
 </head>
 
-<body onload="initHome()">
+<body style="background:#0d0d18; color:white; padding:20px;">
 
-    <h1 id="welcome">Carregando...</h1>
+    <h1>Bem-vindo ao CQ</h1>
+    <p>Você está logado.</p>
 
-    <p>
-        <a href="create.html">Criar nova Reclamação</a><br><br>
-        <a href="complaint-list.html">Ver Reclamações</a><br><br>
-        <a href="company.html">Empresas</a>
-    </p>
-
-    <button onclick="handleLogoutClick()">Sair</button>
+    <button onclick="logout()">Sair</button>
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-  <script src="firebase-v2.js"></script>
-
-
+    <script src="firebase.js"></script>
     <script src="auth-guard.js"></script>
-    <script src="auth.js"></script>
-    <script src="home.js"></script>
+
+    <script>
+        function logout() {
+            auth.signOut().then(() => {
+                window.location.href = "index.html";
+            });
+        }
+    </script>
 
 </body>
 </html>
