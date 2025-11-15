@@ -1,71 +1,72 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+<!doctype html>
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Quality - Início</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Control Quality - Login</title>
+  <link rel="stylesheet" href="style.css">
 
-    <style>
-        body {
-            background-color: #0f0f14;
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .logo {
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .subtitle {
-            color: #bbb;
-            margin-bottom: 40px;
-        }
-
-        .menu {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .btn {
-            background: #1a1a1f;
-            padding: 15px;
-            border-radius: 12px;
-            text-decoration: none;
-            color: white;
-            font-size: 18px;
-            border: 1px solid #333;
-        }
-
-        .btn:hover {
-            background-color: #27272f;
-        }
-
-        .footer {
-            color: #777;
-            margin-top: 50px;
-            font-size: 13px;
-        }
-    </style>
+  <!-- Firebase SDKs (v8) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 </head>
-<body>
 
-    <div class="logo">Control Quality</div>
-    <div class="subtitle">Como deseja entrar?</div>
+<body data-guard="false">
 
-    <div class="menu">
-        <a href="login.html" class="btn">👤 Consumidor</a>
-        <a href="company-login.html" class="btn">🏢 Empresa</a>
-        <a href="signup.html" class="btn">📝 Criar Conta</a>
+  <div class="app">
+
+    <!-- NAVBAR -->
+    <div class="navbar card">
+      <div class="brand">
+        <div class="logo">CQ</div>
+        <div>
+          <div style="font-weight:800;">Control Quality</div>
+          <div class="small">Login</div>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <div class="search small">Entrar</div>
+        <a class="btn" href="signup.html">Criar conta</a>
+      </div>
     </div>
 
-    <div class="footer">
-        © 2025 • CQ - Todos os Direitos Reservados
+    <div class="grid">
+      <div class="sidebar card">
+        <h4 class="small">Bem-vindo</h4>
+        <p class="small">Faça login para continuar.</p>
+      </div>
+
+      <div class="card">
+        <h1 class="h1">Entrar</h1>
+
+        <div style="max-width:420px; margin-top:18px;">
+
+          <div class="field">
+            <label class="small">E-mail</label>
+            <input id="email" type="email" placeholder="email@exemplo.com">
+          </div>
+
+          <div class="field">
+            <label class="small">Senha</label>
+            <input id="password" type="password" placeholder="Senha">
+          </div>
+
+          <div style="display:flex; gap:12px; margin-top:20px;">
+            <button class="btn" onclick="login()">Entrar</button>
+            <button class="btn ghost" onclick="location.href='signup.html'">Criar conta</button>
+          </div>
+
+        </div>
+      </div>
     </div>
 
+    <div class="footer">Control Quality • Dark Neon UI</div>
+
+  </div>
+
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
 </body>
 </html>
