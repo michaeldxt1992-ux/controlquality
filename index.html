@@ -80,11 +80,21 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-    <!-- Seu config -->
+    <!-- Config Firebase -->
     <script src="firebase.js"></script>
 
-    <!-- Lógica -->
-    <script src="auth.js"></script>
+    <!-- Auth Guard (correto) -->
+    <script src="auth-guard.js"></script>
+
+    <script>
+        function login() {
+            authGuard.login();  // chama a função correta
+        }
+
+        function testWithoutLogin() {
+            window.location.href = "home.html";
+        }
+    </script>
 
 </body>
 </html>
