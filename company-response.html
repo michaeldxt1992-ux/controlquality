@@ -1,53 +1,90 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Responder Reclamação</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Responder Reclamação</title>
+  <link rel="stylesheet" href="style.css">
 
-    <style>
-        body { margin:0; background:#0d0d0d; color:white; font-family:Arial; }
-        .navbar { background:#111; padding:12px; display:flex; justify-content:space-between; }
-        .nav-left a { color:white; margin-right:15px; text-decoration:none; }
-        .nav-right button { background:red; padding:8px 12px; border:none; color:white; border-radius:5px; }
-        .container { padding:20px; }
-        textarea {
-            width:100%; background:#222; border:none; color:white;
-            padding:12px; border-radius:5px; margin-top:10px;
-        }
-        button {
-            width:100%; background:#1a73e8; padding:12px;
-            border:none; border-radius:5px; margin-top:10px; color:white;
-        }
-    </style>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 </head>
 
-<body>
+<body data-guard="true">
 
-    <div class="navbar">
-        <div class="nav-left">
-            <a href="company-panel.html">Voltar</a>
+  <div class="app">
+
+    <!-- NAVBAR -->
+    <div class="navbar card">
+      <div class="brand">
+        <div class="logo">CQ</div>
+        <div>
+          <div style="font-weight:800;">Responder Reclamação</div>
+          <div class="small user-email"></div>
         </div>
-        <div class="nav-right">
-            <button onclick="logout()">Sair</button>
-        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn ghost" onclick="location.href='company-panel.html'">Voltar</button>
+      </div>
     </div>
 
-    <div class="container">
-        <h2>Responder Reclamação</h2>
-        <p id="titulo"></p>
-        <p id="descricao"></p>
+    <!-- CARD PRINCIPAL -->
+    <div class="card" style="max-width:700px;margin:auto">
+      <h1 class="h1">Responder Reclamação</h1>
 
-        <textarea id="resposta" rows="5" placeholder="Digite a resposta"></textarea>
-        <button onclick="enviarResposta()">Enviar Resposta</button>
+      <div id="complaint-detail" class="small" style="margin-bottom:18px;">
+        Carregando...
+      </div>
+
+      <textarea id="company-response" placeholder="Escreva a resposta para o cliente..." style="min-height:120px;"></textarea>
+
+      <div style="margin-top:16px;">
+        <button class="btn" onclick="sendResponse()">Enviar resposta e fechar</button>
+      </div>
     </div>
 
-    <script src="auth-guard.js"></script>
-    <script src="app.js"></script>
+  </div>
 
-    <script>
-        function logout() { auth.signOut().then(()=>window.location.href="index.html"); }
-    </script>
+  <!-- Scripts -->
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
+  <script src="auth-guard.js"></script>
+  <script src="app.js"></script>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const id = params.get("id");
+
+    async function loadData() {
+      if (!id) {
+        document.getElementById("complaint-detail").innerHTML = "ID da reclamação não encontrado.";
+        return;
+      }
+
+      const snap = await db.collection("complaints").doc(id).get();
+      if (!snap.exists) {
+        document.getElementById("complaint-detail").innerHTML = "Reclamação não encontrada.";
+        return;
+      }
+
+      const data = snap.data();
+
+      document.getElementById("complaint-detail").innerHTML = `
+        <strong>${data.title}</strong><br>
+        <p class="small">${data.description}</p>
+        <p class="small"><b>Empresa:</b> ${data.company}</p>
+      `;
+    }
+
+    async function sendResponse() {
+      await app.respondComplaint(id);
+    }
+
+    loadData();
+  </script>
 
 </body>
 </html>
