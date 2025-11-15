@@ -2,86 +2,57 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Criar Reclamação - CQ</title>
+    <title>Registrar Reclamação</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
-        body {
-            background: #0d0d18;
-            color: white;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-        }
+        body { margin: 0; background: #0d0d0d; color: #fff; font-family: Arial; }
 
+        .navbar {
+            background: #111; padding: 12px; display: flex;
+            justify-content: space-between; align-items: center;
+        }
+        .nav-left a { color: white; text-decoration: none; margin-right: 15px; }
+        .nav-right button { background:red; padding:8px 12px; border:none; color:white; border-radius:5px; }
+        .container { padding: 20px; }
         input, textarea {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 6px;
+            width: 100%; padding: 10px; margin-top: 10px;
+            background: #222; color: white; border: none; border-radius: 5px;
         }
-
         button {
-            width: 100%;
-            padding: 12px;
-            background: #035CFF;
-            border: none;
-            color: white;
-            border-radius: 8px;
-            margin-top: 20px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
+            margin-top: 15px; background: #1a73e8; color:white;
+            padding: 12px; border:none; border-radius: 5px; width: 100%;
         }
     </style>
 </head>
 
 <body>
 
-<h2>Criar Reclamação</h2>
+    <div class="navbar">
+        <div class="nav-left">
+            <a href="home.html">Início</a>
+            <a href="complaint-list.html">Minhas Reclamações</a>
+        </div>
+        <div class="nav-right">
+            <button onclick="logout()">Sair</button>
+        </div>
+    </div>
 
-<input id="companyName" placeholder="Nome da Empresa">
-<input id="title" placeholder="Título da Reclamação">
-<textarea id="description" rows="5" placeholder="Descreva o problema"></textarea>
+    <div class="container">
+        <h2>Registrar Reclamação</h2>
 
-<button onclick="submitComplaint()">Enviar Reclamação</button>
+        <input id="titulo" placeholder="Título da Reclamação">
+        <textarea id="descricao" rows="5" placeholder="Descreva o problema"></textarea>
 
-<a href="complaint.html" style="color:#ccc; display:block; margin-top:20px;">Voltar</a>
+        <button onclick="createComplaint()">Enviar</button>
+    </div>
 
-<!-- Firebase -->
-<script src="firebase.js"></script>
-<script src="auth-guard.js"></script>
+    <script src="auth-guard.js"></script>
+    <script src="app.js"></script>
 
-<script>
-function submitComplaint() {
-    const companyName = document.getElementById("companyName").value;
-    const title = document.getElementById("title").value;
-    const description = document.getElementById("description").value;
-
-    if (!companyName || !title || !description) {
-        alert("Preencha todos os campos!");
-        return;
-    }
-
-    const userId = auth.currentUser.uid;
-
-    db.collection("reclamacoes")
-        .add({
-            userId,
-            companyName,
-            title,
-            description,
-            resposta: "",
-            status: "aberta",
-            data: new Date()
-        })
-        .then(() => {
-            alert("Reclamação enviada com sucesso!");
-            window.location.href = "complaint-list.html";
-        })
-        .catch(err => alert("Erro: " + err));
-}
-</script>
+    <script>
+        function logout() { auth.signOut().then(() => window.location.href = "index.html"); }
+    </script>
 
 </body>
 </html>
