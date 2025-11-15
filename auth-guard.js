@@ -1,15 +1,13 @@
-// ===============================================
-// BLOQUEIA ACESSO SE NÃO ESTIVER LOGADO
-// ===============================================
-
-if (!firebase.apps.length) {
-    alert("Firebase não carregou corretamente.");
-}
-
-const authGuard = firebase.auth();
-
-authGuard.onAuthStateChanged(user => {
+// ================================
+// PROTEÇÃO DE ROTAS
+// ================================
+auth.onAuthStateChanged((user) => {
+    // Se o usuário NÃO estiver logado
     if (!user) {
-        window.location.href = "index.html"; // voltar pro login
+        if (!window.location.pathname.includes("index.html") &&
+            !window.location.pathname.includes("signup.html")) {
+
+            window.location.href = "index.html"; // redireciona
+        }
     }
 });
