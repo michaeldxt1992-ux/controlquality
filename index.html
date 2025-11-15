@@ -4,134 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control Quality - Login</title>
+
     <style>
         body {
             margin: 0;
-            padding: 0;
-            background: #0f0f17;
+            background: #0d0d18;
             font-family: Arial, sans-serif;
-            color: white;
-            height: 100vh;
+            color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
         }
 
         .card {
-            width: 320px;
-            background: #161623;
-            padding: 30px;
-            border-radius: 14px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.4);
+            background: #131327;
+            padding: 35px;
+            width: 350px;
+            border-radius: 12px;
             text-align: center;
-        }
-
-        .title {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .subtitle {
-            font-size: 13px;
-            opacity: 0.8;
-            margin-bottom: 20px;
+            box-shadow: 0px 0px 18px rgba(0,0,0,0.4);
         }
 
         input {
             width: 100%;
-            padding: 12px;
-            background: #0f1620;
-            border: 1px solid #222a36;
+            padding: 11px;
+            margin-top: 10px;
             border-radius: 6px;
-            color: #fff;
+            border: none;
             outline: none;
-            margin-bottom: 12px;
+            background: #1c1c38;
+            color: white;
         }
 
         button {
             width: 100%;
             padding: 12px;
-            background: #8b5cf6;
-            color: white;
+            margin-top: 18px;
             border: none;
             border-radius: 6px;
-            font-size: 16px;
+            background: #835CFF;
+            color: white;
+            font-weight: bold;
             cursor: pointer;
-            margin-top: 8px;
         }
 
-        .links {
-            margin-top: 12px;
-            font-size: 13px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .links a {
-            color: #a78bfa;
-            text-decoration: none;
-        }
-
-        .footer {
-            margin-top: 15px;
-            opacity: 0.5;
-            font-size: 12px;
+        a {
+            color: #ccc;
+            font-size: 14px;
+            display: inline-block;
+            margin-top: 10px;
         }
     </style>
 </head>
+
 <body>
 
     <div class="card">
-        <div class="title">CQ</div>
-        <div class="subtitle">Control Quality<br>A voz do consumidor, respostas reais.</div>
+        <h2>CQ</h2>
+        <p>A voz do consumidor, respostas reais.</p>
 
         <input id="email" type="email" placeholder="E-mail">
-        <input id="senha" type="password" placeholder="Senha">
+        <input id="password" type="password" placeholder="Senha">
 
         <button onclick="login()">Entrar</button>
 
-        <div class="links">
-            <a href="signup.html">Criar conta</a>
-            <a href="home.html">Testar sem login</a>
-        </div>
+        <a href="signup.html">Criar conta</a> |
+        <a href="#" onclick="testWithoutLogin()">Testar sem login</a>
 
-        <div class="footer">Versão MVP — Control Quality</div>
+        <p style="margin-top:20px; opacity:0.6;">Versão MVP — Control Quality</p>
     </div>
 
+    <!-- Firebase SDK v8 -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-<!-- 🔥 FIREBASE INLINE -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <!-- Seu config -->
+    <script src="firebase.js"></script>
 
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyB2TRpt8wXdVp4AeMzrxjmjWkQCxPNhgRS",
-        authDomain: "controlquality-28980.firebaseapp.com",
-        projectId: "controlquality-28980",
-        storageBucket: "controlquality-28980.appspot.com",
-        messagingSenderId: "414924674164",
-        appId: "1:414924674164:web:9cd7527cd8e725f1c4f9ef"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-</script>
-
-<script>
-function login() {
-    const email = document.getElementById("email").value;
-    const senha = document.getElementById("senha").value;
-
-    auth.signInWithEmailAndPassword(email, senha)
-        .then(() => {
-            window.location.href = "home.html";
-        })
-        .catch(error => {
-            alert("Erro ao entrar: " + error.message);
-        });
-}
-</script>
+    <!-- Lógica -->
+    <script src="auth.js"></script>
 
 </body>
 </html>
