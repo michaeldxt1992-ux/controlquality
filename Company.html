@@ -1,100 +1,129 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel da Empresa - CQ</title>
+    <title>Painel da Empresa</title>
 
     <style>
         body {
-            background: #0d0d18;
-            color: #fff;
+            background-color: #0f0f14;
+            color: white;
             font-family: Arial, sans-serif;
             padding: 20px;
         }
-        h2 { text-align:center; }
 
-        .card {
-            background: #131327;
-            padding: 18px;
-            margin-bottom: 15px;
-            border-radius: 10px;
+        h2 {
+            margin-bottom: 10px;
         }
 
-        .btn {
-            background: #835CFF;
+        .filter-buttons {
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px;
+            margin-right: 10px;
+            background-color: #4444ff;
             border: none;
+            color: white;
+            border-radius: 8px;
+        }
+
+        button:hover {
+            background-color: #2222ff;
+        }
+
+        .card {
+            background-color: #1b1b22;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            margin: 0;
+        }
+
+        .status {
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        .open-btn {
+            margin-top: 10px;
             padding: 10px;
             width: 100%;
+            background-color: #0066ff;
+            border: none;
             border-radius: 8px;
             color: white;
-            font-weight: bold;
-            margin-top: 10px;
-            cursor: pointer;
         }
     </style>
 </head>
-
 <body>
 
-<h2>Painel da Empresa</h2>
-<p style="text-align:center;">Visualize as reclamações recebidas</p>
+    <h2>Painel da Empresa</h2>
 
-<div id="list">Carregando...</div>
+    <div class="filter-buttons">
+        <button onclick="loadComplaints('all')">Todas</button>
+        <button onclick="loadComplaints('pending')">Aguardando resposta</button>
+        <button onclick="loadComplaints('answered')">Respondidas</button>
+    </div>
 
-<button class="btn" onclick="window.location.href='index.html'">Sair</button>
+    <div id="complaints"></div>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <!-- Firebase + Proteção -->
+    <script src="firebase.js"></script>
+    <script src="auth-guard.js"></script>
 
-<script src="firebase.js"></script>
+    <script>
+        function loadComplaints(filter) {
+            const container = document.getElementById("complaints");
+            container.innerHTML = "<p>Carregando...</p>";
 
-<script>
-auth.onAuthStateChanged(user => {
-    if (!user) {
-        window.location.href = "index.html";
-        return;
-    }
+            db.collection("complaints")
+                .orderBy("createdAt", "desc")
+                .get()
+                .then(snapshot => {
+                    container.innerHTML = "";
+                    
+                    snapshot.forEach(doc => {
+                        const c = doc.data();
+                        const id = doc.id;
 
-    // O nome da empresa será baseado no email de login
-    const empresaNome = user.email.split("@")[0];  
-    loadComplaints(empresaNome);
-});
+                        // FILTRO
+                        if (filter === "pending" && c.status !== "Aguardando resposta") return;
+                        if (filter === "answered" && c.status !== "Respondida") return;
 
-function loadComplaints(empresaNome) {
-    db.collection("complaints")
-      .where("company", "==", empresaNome)
-      .orderBy("createdAt", "desc")
-      .get()
-      .then(snapshot => {
-        
-        if (snapshot.empty) {
-            document.getElementById("list").innerHTML =
-                "<p style='opacity:0.7;text-align:center;'>Nenhuma reclamação encontrada para sua empresa.</p>";
-            return;
+                        const card = document.createElement("div");
+                        card.className = "card";
+
+                        card.innerHTML = `
+                            <h3>${c.title}</h3>
+                            <p>${c.company}</p>
+                            <p class="status">Status: ${c.status}</p>
+                            <button class="open-btn" onclick="openComplaint('${id}')">Abrir</button>
+                        `;
+
+                        container.appendChild(card);
+                    });
+
+                    if (container.innerHTML === "") {
+                        container.innerHTML = "<p>Nenhuma reclamação encontrada.</p>";
+                    }
+                });
         }
 
-        let html = "";
-        snapshot.forEach(doc => {
-            const c = doc.data();
+        function openComplaint(id) {
+            window.location.href = "company-response.html?id=" + id;
+        }
 
-            html += `
-                <div class="card">
-                    <h3>${c.title}</h3>
-                    <p><strong>Cliente:</strong> ${c.userId}</p>
-                    <p><strong>Descrição:</strong> ${c.description}</p>
-                    <p><strong>Status:</strong> ${c.status}</p>
-                    <button class="btn" onclick="location.href='company-response.html?id=${doc.id}'">Responder</button>
-                </div>
-            `;
-        });
-
-        document.getElementById("list").innerHTML = html;
-    });
-}
-</script>
+        // carregar todas de início
+        loadComplaints("all");
+    </script>
 
 </body>
 </html>
