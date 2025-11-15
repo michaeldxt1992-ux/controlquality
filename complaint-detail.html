@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da Reclamação - CQ</title>
+
+    <style>
+        body {
+            background: #0d0d18;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .card {
+            background: #131327;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .status {
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .open { background: #ff5050; }
+        .answered { background: #835CFF; }
+        .resolved { background: #00c851; }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #035CFF;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        a {
+            color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Detalhes da Reclamação</h2>
+
+<div id="content">Carregando...</div>
+
+<button onclick="window.location.href='complaint-list.html'">Voltar</button>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script src="firebase.js"></script>
+<script src="auth-guard.js"></script>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    if (!id) {
+        document.getElementById("content").innerHTML =
+            "<p style='opacity:0.7;'>ID não encontrado.</p>";
+    } else {
+        loadDetails();
+    }
+
+    function loadDetails() {
+        db.collection("complaints").doc(id).get().then(doc => {
+            if (!doc.exists) {
+                document.getElementById("content").innerHTML =
+                    "<p style='opacity:0.7;'>Reclamação não encontrada.</p>";
+                return;
+            }
+
+            const c = doc.data();
+
+            let statusClass = "open";
+            if (c.status === "respondida") statusClass = "answered";
+            if (c.status === "resolvida") statusClass = "resolved";
+
+            document.getElementById("content").innerHTML = `
+                <div class="card">
+                    <h3>${c.title}</h3>
+
+                    <span class="status ${statusClass}">
+                        ${c.status.toUpperCase()}
+                    </span>
+
+                    <p><strong>Empresa:</strong> ${c.company}</p>
+                    <p><strong>Descrição:</strong> ${c.description}</p>
+                    <p><strong>Data:</strong> ${new Date(c.createdAt).toLocaleString()}</p>
+
+                    <h3>Resposta da Empresa:</h3>
+                    <p>${c.resposta || "<i>Aguardando resposta...</i>"}</p>
+                </div>
+            `;
+        });
+    }
+</script>
+
+</body>
+</html>
