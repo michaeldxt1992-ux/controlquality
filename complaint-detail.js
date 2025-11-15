@@ -63,3 +63,4 @@ async function loadComplaintDetail() {
     document.getElementById("detailStatus").textContent = data.response ? "Respondida" : "Pendente";
     document.getElementById("detailResponse").textContent = data.response ?? "Nenhuma resposta ainda.";
 }
+<script type="module" src="complaint-detail.js"></script>
