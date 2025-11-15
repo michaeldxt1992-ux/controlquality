@@ -1,142 +1,56 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Control Quality - Início</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Control Quality</title>
 
     <style>
         body {
             margin: 0;
-            padding: 0;
-            background: #0f0f17;
             font-family: Arial, sans-serif;
+            background: #0d0d18;
             color: white;
+            padding: 25px;
         }
 
-        header {
-            background: #161623;
-            padding: 18px;
-            text-align: center;
-            font-size: 20px;
-            border-bottom: 1px solid #222a36;
-        }
-
-        .container {
-            padding: 20px;
-        }
-
-        .btn {
-            width: 100%;
-            background: #8b5cf6;
-            padding: 14px;
+        button {
+            padding: 10px 18px;
+            background: #835CFF;
+            border: none;
             border-radius: 6px;
-            text-align: center;
             color: white;
-            font-size: 16px;
-            margin-bottom: 20px;
-            text-decoration: none;
-            display: block;
+            cursor: pointer;
         }
 
-        .card {
-            background: #161623;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 12px;
-            border: 1px solid #222a36;
-        }
-
-        .titulo {
-            font-size: 17px;
-            font-weight: bold;
-        }
-
-        .empresa {
-            font-size: 14px;
-            opacity: 0.8;
+        a {
+            color: #835CFF;
         }
     </style>
 </head>
 
-<body>
+<body onload="initHome()">
 
-<header>CQ — Início</header>
+    <h1 id="welcome">Carregando...</h1>
 
-<div class="container">
+    <p>
+        <a href="create.html">Criar nova Reclamação</a><br><br>
+        <a href="complaint-list.html">Ver Reclamações</a><br><br>
+        <a href="company.html">Empresas</a>
+    </p>
 
-    <a class="btn" href="create.html">+ Criar Reclamação</a>
+    <button onclick="handleLogoutClick()">Sair</button>
 
-    <h3>Reclamações recentes</h3>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-    <div id="lista"></div>
+    <script src="firebase.js"></script>
 
-</div>
-
-<!-- 🔥 Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
-<script>
-const firebaseConfig = {
-    apiKey: "AIzaSyB2TRpt8wXdVp4AeMzrxjmjWkQCxPNhgRS",
-    authDomain: "controlquality-28980.firebaseapp.com",
-    projectId: "controlquality-28980",
-    storageBucket: "controlquality-28980.appspot.com",
-    messagingSenderId: "414924674164",
-    appId: "1:414924674164:web:9cd7527cd8e725f1c4f9ef"
-};
-
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-</script>
-
-<script>
-// 🔥 Garantir login antes de carregar a home
-auth.onAuthStateChanged(user => {
-    if (!user) {
-        window.location.href = "index.html";
-        return;
-    }
-    carregarReclamacoes();
-});
-
-// 🔥 Puxa reclamações do Firestore
-function carregarReclamacoes() {
-    const lista = document.getElementById("lista");
-    lista.innerHTML = "<p>Carregando...</p>";
-
-    db.collection("reclamacoes")
-        .orderBy("data", "desc")
-        .limit(20)
-        .get()
-        .then((snapshot) => {
-            lista.innerHTML = "";
-
-            if (snapshot.empty) {
-                lista.innerHTML = "<p>Nenhuma reclamação encontrada.</p>";
-                return;
-            }
-
-            snapshot.forEach(doc => {
-                const r = doc.data();
-                const card = `
-                    <div class="card">
-                        <div class="titulo">${r.titulo}</div>
-                        <div class="empresa">${r.empresa}</div>
-                    </div>
-                `;
-                lista.innerHTML += card;
-            });
-        })
-        .catch(err => {
-            lista.innerHTML = "<p>Erro ao carregar reclamações.</p>";
-            console.error(err);
-        });
-}
-</script>
+    <script src="auth-guard.js"></script>
+    <script src="auth.js"></script>
+    <script src="home.js"></script>
 
 </body>
 </html>
