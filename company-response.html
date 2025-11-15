@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Responder Reclamação — Control Quality</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #111827;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #a855f7;
+        }
+
+        .box {
+            background: #1f2937;
+            padding: 18px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            opacity: .7;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            background: #0f172a;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #a855f7;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .back {
+            background: #374151;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Responder Reclamação</h1>
+
+        <div class="box">
+            <p><b>Título:</b> <span id="title"></span></p>
+            <p><b>Descrição:</b> <br> <span id="description"></span></p>
+            <p><b>Usuário:</b> <span id="userEmail"></span></p>
+        </div>
+
+        <label>Resposta da empresa</label>
+        <textarea id="responseText" placeholder="Digite aqui sua resposta..."></textarea>
+
+        <button onclick="sendResponse()">Enviar Resposta</button>
+        <button class="back" onclick="goBack()">Voltar</button>
+    </div>
+
+    <script type="module">
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { 
+            getFirestore, doc, getDoc, updateDoc 
+        } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+        import {
+            getAuth, onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2TRtp8wXdvP4eMzrxjmWlKQcxPNhgRS",
+            authDomain: "controlquality-28980.firebaseapp.com",
+            projectId: "controlquality-28980",
+            storageBucket: "controlquality-28980.appspot.com",
+            messagingSenderId: "414942674144",
+            appId: "1:414942674144:web:9cd7527cd8e725f1c4f9ef"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Pegando ID da reclamação da URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const complaintId = urlParams.get("id");
+
+        // Verificação de login empresa
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = "index.html";
+                return;
+            }
+
+            loadComplaint();
+        });
+
+        // Carregar dados da reclamação
+        async function loadComplaint() {
+            const ref = doc(db, "complaints", complaintId);
+            const snap = await getDoc(ref);
+
+            if (!snap.exists()) {
+                alert("Reclamação não encontrada");
+                return;
+            }
+
+            const data = snap.data();
+
+            document.getElementById("title").textContent = data.title;
+            document.getElementById("description").textContent = data.description;
+            document.getElementById("userEmail").textContent = data.userEmail;
+        }
+
+        // Enviar resposta
+        async function sendResponse() {
+            const text = document.getElementById("responseText").value.trim();
+
+            if (text.length < 3) {
+                alert("Digite uma resposta válida!");
+                return;
+            }
+
+            await updateDoc(doc(db, "complaints", complaintId), {
+                response: text,
+                respondedAt: new Date().toISOString()
+            });
+
+            alert("Resposta enviada!");
+            window.location.href = "company.html";
+        }
+
+        function goBack() {
+            window.location.href = "company.html";
+        }
+    </script>
+</body>
+</html>
