@@ -1,128 +1,52 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Responder Reclamação</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
-        body {
-            background-color: #0f0f14;
-            color: white;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-
-        h2 {
-            margin-bottom: 5px;
-        }
-
-        .box {
-            background-color: #1b1b22;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #333;
-        }
-
+        body { margin:0; background:#0d0d0d; color:white; font-family:Arial; }
+        .navbar { background:#111; padding:12px; display:flex; justify-content:space-between; }
+        .nav-left a { color:white; margin-right:15px; text-decoration:none; }
+        .nav-right button { background:red; padding:8px 12px; border:none; color:white; border-radius:5px; }
+        .container { padding:20px; }
         textarea {
-            width: 100%;
-            height: 130px;
-            padding: 10px;
-            border-radius: 8px;
-            border: none;
-            background-color: #222;
-            color: white;
+            width:100%; background:#222; border:none; color:white;
+            padding:12px; border-radius:5px; margin-top:10px;
         }
-
         button {
-            padding: 12px;
-            width: 100%;
-            background-color: #0066ff;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-
-        button:hover {
-            background-color: #0044cc;
-        }
-
-        .back {
-            background-color: #555;
-            margin-top: 10px;
+            width:100%; background:#1a73e8; padding:12px;
+            border:none; border-radius:5px; margin-top:10px; color:white;
         }
     </style>
 </head>
+
 <body>
 
-    <h2>Responder Reclamação</h2>
-
-    <div id="complaintBox" class="box">
-        Carregando reclamação...
+    <div class="navbar">
+        <div class="nav-left">
+            <a href="company-panel.html">Voltar</a>
+        </div>
+        <div class="nav-right">
+            <button onclick="logout()">Sair</button>
+        </div>
     </div>
 
-    <h3>Sua resposta:</h3>
-    <textarea id="response" placeholder="Digite a resposta da empresa..."></textarea>
+    <div class="container">
+        <h2>Responder Reclamação</h2>
+        <p id="titulo"></p>
+        <p id="descricao"></p>
 
-    <button onclick="sendResponse()">Enviar Resposta</button>
-    <button class="back" onclick="goBack()">Voltar</button>
+        <textarea id="resposta" rows="5" placeholder="Digite a resposta"></textarea>
+        <button onclick="enviarResposta()">Enviar Resposta</button>
+    </div>
 
-    <!-- Firebase -->
-    <script src="firebase.js"></script>
     <script src="auth-guard.js"></script>
+    <script src="app.js"></script>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        const complaintId = params.get("id");
-
-        let currentComplaint = null;
-
-        function loadComplaint() {
-            db.collection("complaints").doc(complaintId).get().then(doc => {
-                if (!doc.exists) {
-                    document.getElementById("complaintBox").innerHTML = "<p>Reclamação não encontrada.</p>";
-                    return;
-                }
-
-                currentComplaint = doc.data();
-
-                document.getElementById("complaintBox").innerHTML = `
-                    <p><strong>Empresa:</strong> ${currentComplaint.company}</p>
-                    <p><strong>Título:</strong> ${currentComplaint.title}</p>
-                    <p><strong>Descrição:</strong></p>
-                    <p>${currentComplaint.description}</p>
-                    <p style="opacity: 0.6; margin-top: 10px;">
-                        Criado em: ${new Date(currentComplaint.createdAt).toLocaleString("pt-BR")}
-                    </p>
-                `;
-            });
-        }
-
-        function sendResponse() {
-            const text = document.getElementById("response").value.trim();
-
-            if (text.length === 0) {
-                alert("Digite uma resposta antes de enviar!");
-                return;
-            }
-
-            db.collection("complaints").doc(complaintId).update({
-                response: text,
-                status: "Respondida",
-                respondedAt: Date.now()
-            }).then(() => {
-                alert("Resposta enviada com sucesso!");
-                window.location.href = "company.html";
-            });
-        }
-
-        function goBack() {
-            window.location.href = "company.html";
-        }
-
-        loadComplaint();
+        function logout() { auth.signOut().then(()=>window.location.href="index.html"); }
     </script>
 
 </body>
