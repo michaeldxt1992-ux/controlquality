@@ -1,9 +1,6 @@
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+// Firebase SDKs (carregados pelo HTML, não aqui)
+// Este arquivo deve conter APENAS código JavaScript.
 
-<script>
 // ================================
 // CONFIGURAÇÃO FIREBASE (SDK 8)
 // ================================
@@ -16,10 +13,9 @@ var firebaseConfig = {
     appId: "1:414926471614:web:9cd7527cd8e725f1c4f9ef"
 };
 
-// Inicializar
+// Inicializar Firebase
 firebase.initializeApp(firebaseConfig);
 
 // Exportar
 window.auth = firebase.auth();
 window.db = firebase.firestore();
-</script>
