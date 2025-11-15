@@ -1,88 +1,64 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Painel da Empresa — Control Quality</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empresas</title>
 
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            background: #111827;
-            font-family: Arial, sans-serif;
+            background: #0d0d18;
             color: white;
-        }
-
-        header {
-            text-align: center;
             padding: 20px;
-            background: #1f2937;
-            border-bottom: 1px solid #374151;
+            font-family: Arial;
         }
 
-        header h1 {
-            margin: 0;
-            color: #a855f7;
-            font-size: 23px;
-        }
-
-        .container {
-            max-width: 480px;
-            margin: auto;
-            padding: 20px;
-        }
-
-        .item {
-            background: #1f2937;
-            padding: 15px;
-            margin-bottom: 12px;
-            border-radius: 12px;
-            border: 1px solid #374151;
-        }
-
-        .item h3 {
-            margin: 0;
-            font-size: 18px;
-        }
-
-        .item p {
-            margin: 6px 0;
-            opacity: 0.85;
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background: #131327;
+            border: none;
+            border-radius: 6px;
+            color: white;
         }
 
         button {
-            width: 100%;
-            padding: 14px;
-            background: #ef4444;
+            padding: 12px;
+            background: #835CFF;
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            cursor: pointer;
-            margin-top: 20px;
+            border-radius: 6px;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        li {
+            margin-bottom: 8px;
         }
     </style>
 </head>
 
-<body>
-    <header>
-        <h1>Painel da Empresa</h1>
-    </header>
+<body onload="loadCompanies()">
 
-    <div class="container">
-        <h3 style="margin-bottom: 15px;">Reclamações recebidas</h3>
+    <h2>Empresas</h2>
 
-        <!-- Onde as reclamações vão aparecer -->
-        <div id="complaintList">
-            <p style="opacity:.7;">Carregando...</p>
-        </div>
+    <input id="company-name" placeholder="Nome da empresa">
+    <button onclick="addCompany()">Adicionar Empresa</button>
 
-        <button onclick="doLogout()">Sair da conta</button>
-    </div>
+    <h3>Lista</h3>
+    <div id="company-list">Carregando...</div>
 
-    <!-- Firebase required by company.js -->
-    <script type="module" src="company.js"></script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script src="firebase.js"></script>
+
+    <script src="auth-guard.js"></script>
+    <script src="auth.js"></script>
+    <script src="company.js"></script>
 
 </body>
 </html>
