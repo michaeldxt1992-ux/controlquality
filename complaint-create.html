@@ -1,58 +1,67 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Registrar Reclamação</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Criar Reclamação</title>
+  <link rel="stylesheet" href="style.css">
 
-    <style>
-        body { margin: 0; background: #0d0d0d; color: #fff; font-family: Arial; }
-
-        .navbar {
-            background: #111; padding: 12px; display: flex;
-            justify-content: space-between; align-items: center;
-        }
-        .nav-left a { color: white; text-decoration: none; margin-right: 15px; }
-        .nav-right button { background:red; padding:8px 12px; border:none; color:white; border-radius:5px; }
-        .container { padding: 20px; }
-        input, textarea {
-            width: 100%; padding: 10px; margin-top: 10px;
-            background: #222; color: white; border: none; border-radius: 5px;
-        }
-        button {
-            margin-top: 15px; background: #1a73e8; color:white;
-            padding: 12px; border:none; border-radius: 5px; width: 100%;
-        }
-    </style>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 </head>
 
-<body>
+<body data-guard="true">
 
-    <div class="navbar">
-        <div class="nav-left">
-            <a href="home.html">Início</a>
-            <a href="complaint-list.html">Minhas Reclamações</a>
+  <div class="app">
+
+    <!-- NAVBAR -->
+    <div class="navbar card">
+      <div class="brand">
+        <div class="logo">CQ</div>
+        <div>
+          <div style="font-weight:800;">Criar Reclamação</div>
+          <div class="small user-email"></div>
         </div>
-        <div class="nav-right">
-            <button onclick="logout()">Sair</button>
-        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn ghost" onclick="location.href='home.html'">Voltar</button>
+      </div>
     </div>
 
-    <div class="container">
-        <h2>Registrar Reclamação</h2>
+    <!-- CONTEÚDO -->
+    <div class="card" style="max-width:720px;margin:auto">
+      <h1 class="h1">Nova Reclamação</h1>
 
-        <input id="titulo" placeholder="Título da Reclamação">
-        <textarea id="descricao" rows="5" placeholder="Descreva o problema"></textarea>
+      <div class="field">
+        <label class="small">Empresa</label>
+        <input id="company" type="text" placeholder="Nome da empresa">
+      </div>
 
-        <button onclick="createComplaint()">Enviar</button>
+      <div class="field">
+        <label class="small">Título</label>
+        <input id="title" type="text" placeholder="Ex: Problema com entrega">
+      </div>
+
+      <div class="field">
+        <label class="small">Descrição</label>
+        <textarea id="description" placeholder="Descreva detalhadamente o problema"></textarea>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:16px;">
+        <button class="btn" onclick="app.submitComplaint()">Enviar Reclamação</button>
+        <button class="btn ghost" onclick="location.href='home.html'">Cancelar</button>
+      </div>
+
     </div>
 
-    <script src="auth-guard.js"></script>
-    <script src="app.js"></script>
+  </div>
 
-    <script>
-        function logout() { auth.signOut().then(() => window.location.href = "index.html"); }
-    </script>
-
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
+  <script src="auth-guard.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
