@@ -1,6 +1,3 @@
-// Firebase SDKs (carregados pelo HTML, não aqui)
-// Este arquivo deve conter APENAS código JavaScript.
-
 // ================================
 // CONFIGURAÇÃO FIREBASE (SDK 8)
 // ================================
@@ -13,9 +10,9 @@ var firebaseConfig = {
     appId: "1:414926471614:web:9cd7527cd8e725f1c4f9ef"
 };
 
-// Inicializar Firebase
+// Inicializar
 firebase.initializeApp(firebaseConfig);
 
-// Exportar
+// Exportar global
 window.auth = firebase.auth();
 window.db = firebase.firestore();
