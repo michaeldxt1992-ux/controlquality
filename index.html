@@ -1,12 +1,125 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Control Quality — Login</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Quality - Login</title>
+
+    <!-- CSS embutido -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0d0d16;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 380px;
+            background: #141627;
+            padding: 35px 25px;
+            border-radius: 18px;
+            box-shadow: 0px 0px 40px rgba(0,0,0,0.4);
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            margin-top: 4px;
+            opacity: 0.8;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            text-align: left;
+            font-size: 14px;
+            opacity: .9;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: #0e1120;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            background: #8b5cf6;
+            border: none;
+            padding: 13px;
+            margin-top: 18px;
+            border-radius: 10px;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #7c4cf0;
+        }
+
+        .links {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .links a {
+            color: #8b5cf6;
+            text-decoration: none;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 13px;
+            color: #aaa;
+            margin-top: 22px;
+        }
+    </style>
 </head>
+
 <body>
-Login full file
+
+    <div class="container">
+        <h1>CQ</h1>
+        <div class="subtitle">Control Quality<br>A voz do consumidor, respostas reais.</div>
+
+        <label for="email">E-mail</label>
+        <input type="email" id="email" placeholder="Digite seu e-mail">
+
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" placeholder="Digite sua senha">
+
+        <button onclick="login()">Entrar</button>
+
+        <div class="links">
+            <a href="signup.html">Criar conta</a>
+            <a href="home.html">Testar sem login</a>
+        </div>
+
+        <footer>Versão MVP — Control Quality</footer>
+    </div>
+
+    <!-- Firebase + Login -->
+    <script src="app.firebase.js"></script>
+    <script src="app.js"></script>
+
 </body>
 </html>
