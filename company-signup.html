@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Empresa - CQ</title>
+
+    <style>
+        body {
+            background: #0d0d18;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: #131327;
+            padding: 30px;
+            border-radius: 12px;
+            width: 340px;
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            background: #1c1c38;
+            color: white;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: #035CFF;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        a {
+            color: #ccc;
+            margin-top: 10px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>Cadastrar Empresa</h2>
+
+    <input id="nome" type="text" placeholder="Nome da empresa">
+    <input id="email" type="email" placeholder="E-mail empresarial">
+    <input id="password" type="password" placeholder="Senha">
+
+    <button onclick="companySignup()">Criar Conta</button>
+    <a href="company-login.html">Já tenho conta</a>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script src="firebase.js"></script>
+
+<script>
+function companySignup() {
+    const nome = document.getElementById("nome").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    if (!nome || !email || !password) {
+        alert("Preencha todos os campos!");
+        return;
+    }
+
+    auth.createUserWithEmailAndPassword(email, password)
+        .then(cred => {
+            const uid = cred.user.uid;
+
+            // Registrar empresa no Firestore
+            return db.collection("empresas").doc(uid).set({
+                nome,
+                email,
+                uid
+            });
+        })
+        .then(() => {
+            alert("Empresa cadastrada com sucesso!");
+            window.location.href = "company-login.html";
+        })
+        .catch(err => alert("Erro: " + err.message));
+}
+</script>
+
+</body>
+</html>
