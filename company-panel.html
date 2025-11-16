@@ -51,22 +51,56 @@
 
   </div>
 
+  <!-- SCRIPTS GERAIS -->
   <script src="firebase.js"></script>
   <script src="auth.js"></script>
   <script src="auth-guard.js"></script>
   <script src="app.js"></script>
 
+  <!-- 🔥 SCRIPT PROFISSIONAL DO PAINEL DA EMPRESA -->
   <script>
-    // 🔥 Aqui você define o nome da empresa
-    const companyId = "Empresa X";  
+    auth.onAuthStateChanged(async user => {
+      if (!user) {
+        location.href = "company-login.html";
+        return;
+      }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      app.loadAllComplaintsForCompany(companyId);
+      try {
+        // Busca o cadastro da empresa na coleção USERS
+        const snap = await db.collection("users").doc(user.uid).get();
+
+        if (!snap.exists) {
+          alert("Erro: cadastro empresarial não encontrado.");
+          auth.signOut();
+          return;
+        }
+
+        const data = snap.data();
+
+        // Garante que é realmente uma conta de empresa
+        if (data.type !== "company") {
+          alert("Acesso negado: esta conta não é de empresa.");
+          auth.signOut();
+          return;
+        }
+
+        // Nome real da empresa salvo no signup
+        const companyName = data.companyName;
+
+        // Carrega reclamações referentes à empresa
+        app.loadAllComplaintsForCompany(companyName);
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById("company-list").innerHTML =
+          "Erro ao carregar dados da empresa.";
+      }
     });
 
+    // Botão para responder
     window.openResponse = function (id) {
       window.location.href = "company-response.html?id=" + id;
-    }
+    };
   </script>
 
 </body>
