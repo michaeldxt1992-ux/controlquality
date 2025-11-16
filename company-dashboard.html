@@ -3,176 +3,133 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dashboard da Empresa • Control Quality</title>
+  <title>Dashboard da Empresa</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 </head>
+
 <body data-guard="true">
 
-<div class="app">
+  <div class="app">
 
-  <div class="navbar card">
-    <div class="brand">
-      <div class="logo">CQ</div>
-      <div>
-        <div style="font-weight:800;">Dashboard da Empresa</div>
-        <div class="small user-email"></div>
+    <!-- NAVBAR -->
+    <div class="navbar card">
+      <div class="brand">
+        <div class="logo">CQ</div>
+        <div>
+          <div style="font-weight:800;">Dashboard da Empresa</div>
+          <div class="small user-email"></div>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <div class="search small">Empresa</div>
+        <button class="btn ghost" onclick="logout()">Sair</button>
       </div>
     </div>
-    <div class="nav-actions">
-      <button class="btn ghost" onclick="location.href='home.html'">Voltar</button>
-    </div>
-  </div>
 
-  <div class="grid">
+    <div class="grid">
 
-    <div class="sidebar card">
-      <ul class="nav-list">
-        <li><a href="home.html">🏠 Menu principal</a></li>
-
-        <span id="menu-user">
-          <li><a href="complaint-create.html">➕ Criar reclamação</a></li>
-          <li><a href="complaint-list.html">📋 Minhas reclamações</a></li>
-        </span>
-
-        <span id="menu-company">
-          <li><a href="company-panel.html">🏢 Painel da empresa</a></li>
+      <!-- MENU LATERAL -->
+      <div class="sidebar card">
+        <ul class="nav-list">
+          <li><a href="home.html">🏠 Menu Principal</a></li>
+          <li><a href="company-panel.html">📋 Reclamações</a></li>
           <li><a class="active" href="company-dashboard.html">📊 Dashboard</a></li>
-          <li><a href="company-reports.html">🚨 Denúncias recebidas</a></li>
-          <li><a href="company-profile.html">👤 Perfil da empresa</a></li>
-        </span>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h1 class="h1">Visão Geral</h1>
-      <p class="small">Estatísticas da empresa no sistema</p>
-
-      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-top:16px;">
-        <div class="card">
-          <h3>Total de Reclamações</h3>
-          <p class="h1" id="total-count">0</p>
-        </div>
-
-        <div class="card">
-          <h3>Reclamações Abertas</h3>
-          <p class="h1" id="open-count">0</p>
-        </div>
-
-        <div class="card">
-          <h3>Reclamações Fechadas</h3>
-          <p class="h1" id="closed-count">0</p>
-        </div>
-
-        <div class="card">
-          <h3>Denúncias Recebidas</h3>
-          <p class="h1" id="reports-count">0</p>
-        </div>
-
-        <div class="card">
-          <h3>Taxa de Resolução</h3>
-          <p class="h1" id="percent-count">0%</p>
-        </div>
+          <li><a href="company-reports.html">🚨 Denúncias Recebidas</a></li>
+          <li><a href="company-profile.html">👤 Perfil da Empresa</a></li>
+        </ul>
       </div>
 
-      <h2 class="h1" style="margin-top:28px;">Últimas Denúncias</h2>
-      <div id="recent-reports" style="margin-top:12px;">Carregando...</div>
+      <!-- CONTEÚDO PRINCIPAL -->
+      <div class="card">
+        <h1 class="h1">Visão Geral</h1>
+        <p class="small">Resumo da reputação da sua empresa no Control Quality</p>
 
+        <div id="dashboard-box" style="margin-top:16px;">
+            Carregando informações...
+        </div>
+      </div>
     </div>
+
+    <div class="footer">Control Quality • Dark Neon UI</div>
 
   </div>
 
-  <div class="footer">Control Quality • Dark Neon UI</div>
+  <!-- Scripts -->
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
+  <script src="auth-guard.js"></script>
 
-</div>
+  <script>
+  auth.onAuthStateChanged(async user => {
+    if (!user) return;
 
-<script src="firebase.js"></script>
-<script src="auth.js"></script>
-<script src="auth-guard.js"></script>
-<script src="app.js"></script>
+    try {
+      const snap = await db.collection("users").doc(user.uid).get();
+      if (!snap.exists) {
+        document.getElementById("dashboard-box").innerHTML =
+          "<p class='small'>Erro ao carregar dados.</p>";
+        return;
+      }
 
-<script>
-auth.onAuthStateChanged(async user=>{
-  if(!user) return;
+      const data = snap.data();
+      const companyName = data.companyName;
 
-  const snap = await db.collection('users').doc(user.uid).get();
-  if(!snap.exists) return;
-  const data = snap.data();
+      // BUSCAR RECLAMAÇÕES
+      const complaintsSnap = await db.collection("complaints")
+        .where("company", "==", companyName)
+        .get();
 
-  const menuUser = document.getElementById('menu-user');
-  const menuCompany = document.getElementById('menu-company');
+      let totalComplaints = complaintsSnap.size;
+      let open = 0;
+      let closed = 0;
 
-  if(data.type === 'company'){
-    menuCompany.style.display = 'block';
-    menuUser.style.display = 'none';
-  } else {
-    menuCompany.style.display = 'none';
-    menuUser.style.display = 'block';
-  }
+      complaintsSnap.forEach(doc => {
+        const d = doc.data();
+        if (d.status === "open") open++;
+        else closed++;
+      });
 
-  const companyName = data.companyName;
+      // BUSCAR DENÚNCIAS
+      const reportsSnap = await db.collection("reports")
+        .where("companyName", "==", companyName)
+        .get();
 
-  // Reclamações stats
-  const complaintsSnap = await db.collection('complaints')
-    .where('company', '==', companyName)
-    .get();
+      let totalReports = reportsSnap.size;
 
-  let total=0, open=0, closed=0;
-  complaintsSnap.forEach(d=>{
-    total++;
-    if(d.data().status === 'open') open++;
-    else closed++;
-  });
-
-  document.getElementById('total-count').textContent = total;
-  document.getElementById('open-count').textContent = open;
-  document.getElementById('closed-count').textContent = closed;
-  const percent = total>0 ? Math.round((closed/total)*100) : 0;
-  document.getElementById('percent-count').textContent = percent + '%';
-
-  // Denúncias stats
-  const reportsSnap = await db.collection('reports')
-    .where('companyName', '==', companyName)
-    .where('category', '==', 'SERVICE_QUALITY')
-    .get();
-
-  document.getElementById('reports-count').textContent = reportsSnap.size;
-
-  // Últimas denúncias (3)
-  const recent = await db.collection('reports')
-    .where('companyName','==',companyName)
-    .where('category','==','SERVICE_QUALITY')
-    .orderBy('createdAt','desc')
-    .limit(3)
-    .get();
-
-  const list = document.getElementById('recent-reports');
-  list.innerHTML = '';
-  if(recent.empty){
-    list.innerHTML = '<p class="small">Nenhuma denúncia recente.</p>';
-  } else {
-    recent.forEach(doc=>{
-      const d = doc.data();
-      const item = document.createElement('div');
-      item.className = 'list-item';
-      item.innerHTML = `
-        <div>
-          <strong>${d.reason}</strong>
-          <div class="small">${d.description ? (d.description.length>120 ? d.description.substr(0,120)+'...' : d.description) : ''}</div>
-          <div class="small">${d.createdAt ? new Date(d.createdAt.seconds*1000).toLocaleString() : ''}</div>
+      // HTML FINAL DO DASHBOARD
+      document.getElementById("dashboard-box").innerHTML = `
+        <div class="card" style="margin-bottom:20px;">
+          <h3 style="margin-top:0;">📦 Informações da Empresa</h3>
+          <p><b>Nome da empresa:</b> ${companyName}</p>
+          <p><b>Email:</b> ${user.email}</p>
         </div>
-        <div>
-          <button class="btn ghost" onclick="location.href='report-detail.html?id=${doc.id}'">Ver</button>
+
+        <div class="card" style="margin-bottom:20px;">
+          <h3 style="margin-top:0;">📋 Reclamações</h3>
+          <p>Total: <b>${totalComplaints}</b></p>
+          <p>Abertas: <span class="badge open">${open}</span></p>
+          <p>Fechadas: <span class="badge closed">${closed}</span></p>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-top:0;">🚨 Denúncias</h3>
+          <p>Total de denúncias: <b>${totalReports}</b></p>
         </div>
       `;
-      list.appendChild(item);
-    });
-  }
 
-});
-</script>
+    } catch (err) {
+      console.error(err);
+      document.getElementById("dashboard-box").innerHTML =
+        "<p class='small'>Erro ao carregar dashboard.</p>";
+    }
+  });
+  </script>
 
 </body>
 </html>
