@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Dashboard da Empresa • Control Quality</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+
+<body data-guard="true">
+
+<div class="app">
+
+  <!-- NAVBAR -->
+  <div class="navbar card">
+    <div class="brand">
+      <div class="logo">CQ</div>
+      <div>
+        <div style="font-weight:800;">Dashboard da Empresa</div>
+        <div class="small user-email"></div>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <button class="btn ghost" onclick="location.href='home.html'">Voltar</button>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- MENU LATERAL -->
+    <div class="sidebar card">
+      <ul class="nav-list">
+
+        <li><a href="home.html">🏠 Menu principal</a></li>
+
+        <span id="menu-user">
+          <li><a href="complaint-create.html">➕ Criar reclamação</a></li>
+          <li><a href="complaint-list.html">📋 Minhas reclamações</a></li>
+        </span>
+
+        <span id="menu-company">
+          <li><a href="company-panel.html">🏢 Painel da empresa</a></li>
+          <li><a class="active" href="company-dashboard.html">📊 Dashboard</a></li>
+          <li><a href="company-profile.html">👤 Perfil da empresa</a></li>
+        </span>
+
+      </ul>
+    </div>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="card">
+      <h1 class="h1">Visão Geral</h1>
+      <p class="small">Estatísticas da empresa no sistema</p>
+
+      <!-- INDICADORES -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-top:16px;">
+        
+        <div class="card" id="stat-total">
+          <h3>Total de Reclamações</h3>
+          <p class="h1" id="total-count">0</p>
+        </div>
+
+        <div class="card" id="stat-open">
+          <h3>Reclamações Abertas</h3>
+          <p class="h1" id="open-count">0</p>
+        </div>
+
+        <div class="card" id="stat-closed">
+          <h3>Reclamações Fechadas</h3>
+          <p class="h1" id="closed-count">0</p>
+        </div>
+
+        <div class="card" id="stat-percent">
+          <h3>Taxa de Resolução</h3>
+          <p class="h1" id="percent-count">0%</p>
+        </div>
+
+      </div>
+
+      <!-- ÚLTIMAS RECLAMAÇÕES -->
+      <h2 class="h1" style="margin-top:28px;">Últimas Reclamações</h2>
+      <div id="recent-list" style="margin-top:12px;">
+        Carregando...
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="footer">Control Quality • Dark Neon UI</div>
+
+</div>
+
+<!-- Scripts -->
+<script src="firebase.js"></script>
+<script src="auth.js"></script>
+<script src="auth-guard.js"></script>
+<script src="app.js"></script>
+
+<script>
+auth.onAuthStateChanged(async user => {
+  if (!user) return;
+
+  const snap = await db.collection("users").doc(user.uid).get();
+  const data = snap.data();
+
+  const menuUser = document.getElementById("menu-user");
+  const menuCompany = document.getElementById("menu-company");
+
+  if (data.type === "company") {
+    menuCompany.style.display = "block";
+    menuUser.style.display = "none";
+  } else {
+    menuCompany.style.display = "none";
+    menuUser.style.display = "block";
+  }
+
+  const companyName = data.companyName;
+
+  // Estatísticas
+  const query = await db.collection("complaints")
+    .where("company", "==", companyName)
+    .get();
+
+  let total = 0, open = 0, closed = 0;
+
+  query.forEach(doc => {
+    total++;
+    if (doc.data().status === "open") open++;
+    else closed++;
+  });
+
+  document.getElementById("total-count").textContent = total;
+  document.getElementById("open-count").textContent = open;
+  document.getElementById("closed-count").textContent = closed;
+
+  const percent = total > 0 ? Math.round((closed / total) * 100) : 0;
+  document.getElementById("percent-count").textContent = percent + "%";
+
+  // Últimas reclamações (3 mais recentes)
+  const recent = await db.collection("complaints")
+    .where("company", "==", companyName)
+    .orderBy("createdAt", "desc")
+    .limit(3)
+    .get();
+
+  const list = document.getElementById("recent-list");
+  list.innerHTML = "";
+
+  if (recent.empty) {
+    list.innerHTML = "<p class='small'>Nenhuma reclamação recente.</p>";
+    return;
+  }
+
+  recent.forEach(doc => {
+    const d = doc.data();
+    const item = document.createElement("div");
+    item.className = "list-item";
+
+    item.innerHTML = `
+      <div>
+        <strong>${d.title}</strong>
+        <div class="small">${new Date(d.createdAt.seconds * 1000).toLocaleString()}</div>
+      </div>
+
+      <div>
+        <div class="badge ${d.status === "open" ? "open" : "closed"}">
+          ${d.status === "open" ? "Aberta" : "Fechada"}
+        </div>
+        <button class="btn ghost" onclick="openResponse('${doc.id}')">Ver</button>
+      </div>
+    `;
+
+    list.appendChild(item);
+  });
+});
+</script>
+
+</body>
+</html>
