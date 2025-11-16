@@ -74,29 +74,44 @@
 <script src="firebase.js"></script>
 
 <script>
-function companyLogin() {
+async function companyLogin() {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
 
-    auth.signInWithEmailAndPassword(email, password)
-        .then(async cred => {
+    if (!email || !password) {
+        alert("Preencha todos os campos!");
+        return;
+    }
 
-            const uid = cred.user.uid;
+    try {
+        // Login no Auth
+        const cred = await auth.signInWithEmailAndPassword(email, password);
+        const uid = cred.user.uid;
 
-            // Verifica se é empresa
-            const empresaDoc = await db.collection("empresas").doc(uid).get();
+        // Verificar se é conta empresarial
+        const snap = await db.collection("users").doc(uid).get();
 
-            if (!empresaDoc.exists) {
-                alert("Esta conta não é de empresa!");
-                auth.signOut();
-                return;
-            }
+        if (!snap.exists) {
+            alert("Erro: cadastro não encontrado.");
+            auth.signOut();
+            return;
+        }
 
-            window.location.href = "company.html";
-        })
-        .catch(err => {
-            alert("Erro ao entrar: " + err.message);
-        });
+        const data = snap.data();
+
+        if (data.type !== "company") {
+            alert("Essa conta NÃO é de empresa!");
+            auth.signOut();
+            return;
+        }
+
+        // OK → enviar para o painel da empresa
+        window.location.href = "company-panel.html";
+
+    } catch (err) {
+        alert("Erro ao entrar: " + err.message);
+        console.error(err);
+    }
 }
 </script>
 
