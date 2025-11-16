@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Perfil da Empresa • Control Quality</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+
+<body data-guard="true">
+
+  <div class="app">
+
+    <!-- NAVBAR -->
+    <div class="navbar card">
+      <div class="brand">
+        <div class="logo">CQ</div>
+        <div>
+          <div style="font-weight:800;">Perfil da Empresa</div>
+          <div class="small user-email"></div>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <div class="search small">Empresa</div>
+        <button class="btn ghost" onclick="logout()">Sair</button>
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <!-- MENU LATERAL -->
+      <div class="sidebar card">
+        <ul class="nav-list">
+
+          <!-- MENU PRINCIPAL -->
+          <li><a href="home.html">🏠 Menu principal</a></li>
+
+          <!-- MENU DO USUÁRIO -->
+          <span id="menu-user">
+            <li><a href="complaint-create.html">➕ Criar reclamação</a></li>
+            <li><a href="complaint-list.html">📋 Minhas reclamações</a></li>
+          </span>
+
+          <!-- MENU DA EMPRESA -->
+          <span id="menu-company">
+            <li><a href="company-panel.html">🏢 Painel da empresa</a></li>
+            <li><a class="active" href="company-profile.html">👤 Perfil da empresa</a></li>
+          </span>
+
+        </ul>
+      </div>
+
+      <!-- CONTEÚDO PRINCIPAL -->
+      <div class="card">
+        <h1 class="h1">Informações da Empresa</h1>
+        <p class="small">Dados cadastrados no Control Quality</p>
+
+        <div id="profile-company-box" style="margin-top:16px;">
+          Carregando dados...
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer">Control Quality • Dark Neon UI</div>
+
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
+  <script src="auth-guard.js"></script>
+
+  <!-- 🔥 LÓGICA DO PERFIL DA EMPRESA + MENU INTELIGENTE -->
+  <script>
+  auth.onAuthStateChanged(async user => {
+    if (!user) return;
+
+    try {
+      const snap = await db.collection("users").doc(user.uid).get();
+
+      if (!snap.exists) {
+        document.getElementById("profile-company-box").innerHTML =
+          "<p class='small'>Erro ao carregar dados.</p>";
+        return;
+      }
+
+      const data = snap.data();
+
+      // MENU INTELIGENTE
+      const menuUser = document.getElementById("menu-user");
+      const menuCompany = document.getElementById("menu-company");
+
+      if (data.type === "company") {
+        menuCompany.style.display = "block";
+        menuUser.style.display = "none";
+      } else {
+        menuCompany.style.display = "none";
+        menuUser.style.display = "block";
+      }
+
+      // EXIBIR PERFIL DA EMPRESA
+      document.getElementById("profile-company-box").innerHTML = `
+        <div class="card" style="margin-top:12px;">
+          <p><b>Nome da empresa:</b> ${data.companyName}</p>
+          <p><b>Email:</b> ${user.email}</p>
+          <p><b>ID (UID):</b> ${user.uid}</p>
+          <p><b>Tipo de conta:</b> Empresa</p>
+          <p><b>Criado em:</b> 
+            ${user.metadata.creationTime 
+              ? new Date(user.metadata.creationTime).toLocaleString() 
+              : "—"}
+          </p>
+        </div>
+      `;
+
+    } catch (err) {
+      console.error(err);
+      document.getElementById("profile-company-box").innerHTML =
+        "<p class='small'>Erro ao carregar perfil.</p>";
+    }
+  });
+  </script>
+
+</body>
+</html>
