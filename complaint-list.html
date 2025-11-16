@@ -34,25 +34,87 @@
     <!-- LAYOUT -->
     <div class="grid">
 
+      <!-- MENU LATERAL ATUALIZADO -->
       <div class="sidebar card">
-        <h4 class="small">Filtros</h4>
-        <p class="small">(Filtros avançados no futuro)</p>
+        <ul class="nav-list">
+
+          <li><a href="home.html">🏠 Menu principal</a></li>
+
+          <!-- MENU DO USUÁRIO -->
+          <span id="menu-user">
+            <li><a href="complaint-create.html">➕ Criar reclamação</a></li>
+            <li><a class="active" href="complaint-list.html">📋 Minhas reclamações</a></li>
+
+            <!-- DENÚNCIAS -->
+            <li><a href="report-create.html">⚠ Criar denúncia</a></li>
+            <li><a href="report-list.html">🔎 Minhas denúncias</a></li>
+          </span>
+
+          <!-- MENU DA EMPRESA -->
+          <span id="menu-company">
+            <li><a href="company-panel.html">🏢 Painel da empresa</a></li>
+            <li><a href="company-dashboard.html">📊 Dashboard</a></li>
+            <li><a href="company-reports.html">🚨 Denúncias recebidas</a></li>
+            <li><a href="company-profile.html">👤 Perfil da empresa</a></li>
+          </span>
+
+        </ul>
       </div>
 
+      <!-- CONTEÚDO PRINCIPAL -->
       <div class="card">
         <h1 class="h1">Minhas Reclamações</h1>
 
         <div id="complaint-list" style="margin-top:16px;">
           Carregando...
         </div>
+
+        <!-- LINKS PARA DENÚNCIA -->
+        <div style="margin-top:24px;">
+          <hr style="border-color:rgba(255,255,255,0.08);margin:16px 0;">
+          <p class="small">⚠ Caso seja algo grave, você também pode registrar uma denúncia:</p>
+
+          <button class="btn ghost" onclick="location.href='report-create.html'">Criar Denúncia</button>
+          <button class="btn ghost" onclick="location.href='report-list.html'" style="margin-top:8px;">
+            Ver Minhas Denúncias
+          </button>
+        </div>
+
       </div>
+
     </div>
 
   </div>
 
+  <!-- SCRIPTS -->
   <script src="firebase.js"></script>
   <script src="auth.js"></script>
   <script src="auth-guard.js"></script>
   <script src="app.js"></script>
+
+  <!-- MENU INTELIGENTE -->
+  <script>
+  auth.onAuthStateChanged(async user => {
+    if (!user) return;
+
+    const snap = await db.collection("users").doc(user.uid).get();
+    if (!snap.exists) return;
+
+    const data = snap.data();
+    const type = data.type;
+
+    const menuUser = document.getElementById("menu-user");
+    const menuCompany = document.getElementById("menu-company");
+
+    if (type === "company") {
+      menuCompany.style.display = "block";
+      menuUser.style.display = "none";
+    } else {
+      menuCompany.style.display = "none";
+      menuUser.style.display = "block";
+    }
+  });
+  </script>
+
 </body>
 </html>
