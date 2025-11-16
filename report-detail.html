@@ -5,57 +5,102 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Detalhes da Denúncia</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 </head>
 
 <body data-guard="true">
-<div class="app">
 
-  <div class="navbar card">
-    <div class="brand">
-      <div class="logo">CQ</div>
-      <div>
-        <div style="font-weight:800;">Detalhes da Denúncia</div>
-        <div class="small user-email"></div>
+  <div class="app">
+
+    <!-- NAVBAR -->
+    <div class="navbar card">
+      <div class="brand">
+        <div class="logo">CQ</div>
+        <div>
+          <div style="font-weight:800;">Detalhes da Denúncia</div>
+          <div class="small user-email"></div>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn ghost" onclick="history.back()">Voltar</button>
       </div>
     </div>
-    <div class="nav-actions">
-      <button class="btn ghost" onclick="history.back()">Voltar</button>
+
+    <!-- CONTEÚDO -->
+    <div class="card" style="max-width:760px;margin:auto">
+
+      <h1 class="h1">Denúncia</h1>
+
+      <div id="report-detail" class="small" style="margin-top:12px;">
+        Carregando informações...
+      </div>
+
     </div>
+
+    <div class="footer">Control Quality • Dark Neon UI</div>
+
   </div>
 
-  <div class="card" style="max-width:760px;margin:auto;">
-    <h1 class="h1">Denúncia</h1>
-    <div id="detail" class="small" style="margin-top:12px;">Carregando...</div>
-  </div>
+  <!-- Scripts -->
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
+  <script src="auth-guard.js"></script>
 
-</div>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const id = params.get("id");
 
-<script src="firebase.js"></script>
-<script src="auth.js"></script>
-<script src="auth-guard.js"></script>
+    async function loadReportDetail() {
+      if (!id) {
+        document.getElementById("report-detail").innerHTML =
+          "<p class='small'>ID inválido.</p>";
+        return;
+      }
 
-<script>
-const id = new URLSearchParams(location.search).get("id");
+      try {
+        const doc = await db.collection("reports").doc(id).get();
 
-async function loadDetail() {
-  const doc = await db.collection("reports").doc(id).get();
-  if (!doc.exists) {
-    document.getElementById("detail").innerHTML = "Denúncia não encontrada.";
-    return;
-  }
+        if (!doc.exists) {
+          document.getElementById("report-detail").innerHTML =
+            "<p class='small'>Denúncia não encontrada.</p>";
+          return;
+        }
 
-  const d = doc.data();
+        const data = doc.data();
 
-  document.getElementById("detail").innerHTML = `
-    <strong>${d.reason}</strong><br><br>
-    <p><b>Denunciado:</b> ${d.against}</p>
-    <p><b>Descrição:</b></p>
-    <p>${d.description}</p>
-  `;
-}
+        const dt = data.createdAt
+          ? new Date(data.createdAt.seconds * 1000).toLocaleString()
+          : "—";
 
-loadDetail();
-</script>
+        document.getElementById("report-detail").innerHTML = `
+          <p><b>Empresa denunciada:</b> ${data.companyName}</p>
+          <p><b>Motivo:</b> ${data.reason}</p>
+
+          <hr style="border-color:rgba(255,255,255,0.08); margin:15px 0;">
+
+          <div class="small"><b>Descrição:</b></div>
+          <p>${data.description}</p>
+
+          <hr style="border-color:rgba(255,255,255,0.08); margin:15px 0;">
+
+          <p><b>Criado em:</b> ${dt}</p>
+
+          <p><b>Categoria:</b> Qualidade de Serviço</p>
+        `;
+      } catch (err) {
+        console.error(err);
+        document.getElementById("report-detail").innerHTML =
+          "<p class='small'>Erro ao carregar detalhes.</p>";
+      }
+    }
+
+    loadReportDetail();
+  </script>
 
 </body>
 </html>
