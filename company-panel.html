@@ -34,11 +34,29 @@
     <!-- LAYOUT -->
     <div class="grid">
 
+      <!-- MENU LATERAL INTELIGENTE -->
       <div class="sidebar card">
-        <h4 class="small">Empresa</h4>
-        <p class="small">Reclamações recebidas</p>
+        <ul class="nav-list">
+
+          <!-- SEMPRE EXIBE -->
+          <li><a href="home.html">🏠 Menu principal</a></li>
+
+          <!-- MENU DO USUÁRIO NORMAL -->
+          <span id="menu-user">
+            <li><a href="complaint-create.html">➕ Criar reclamação</a></li>
+            <li><a href="complaint-list.html">📋 Minhas reclamações</a></li>
+          </span>
+
+          <!-- MENU DA EMPRESA (ATUALIZADO) -->
+          <span id="menu-company">
+            <li><a class="active" href="company-panel.html">🏢 Painel da empresa</a></li>
+            <li><a href="company-profile.html">👤 Perfil da empresa</a></li>
+          </span>
+
+        </ul>
       </div>
 
+      <!-- CONTEÚDO PRINCIPAL -->
       <div class="card">
         <h1 class="h1">Reclamações</h1>
 
@@ -57,7 +75,7 @@
   <script src="auth-guard.js"></script>
   <script src="app.js"></script>
 
-  <!-- 🔥 SCRIPT PROFISSIONAL DO PAINEL DA EMPRESA -->
+  <!-- 🔥 MENU INTELIGENTE + LÓGICA DA EMPRESA -->
   <script>
     auth.onAuthStateChanged(async user => {
       if (!user) {
@@ -66,7 +84,6 @@
       }
 
       try {
-        // Busca o cadastro da empresa na coleção USERS
         const snap = await db.collection("users").doc(user.uid).get();
 
         if (!snap.exists) {
@@ -77,17 +94,23 @@
 
         const data = snap.data();
 
-        // Garante que é realmente uma conta de empresa
-        if (data.type !== "company") {
+        const menuUser = document.getElementById("menu-user");
+        const menuCompany = document.getElementById("menu-company");
+
+        // Somente empresa acessa aqui
+        if (data.type === "company") {
+          menuCompany.style.display = "block";
+          menuUser.style.display = "none";
+        } else {
           alert("Acesso negado: esta conta não é de empresa.");
           auth.signOut();
           return;
         }
 
-        // Nome real da empresa salvo no signup
+        // Nome real da empresa salvo no Firestore
         const companyName = data.companyName;
 
-        // Carrega reclamações referentes à empresa
+        // Carregar reclamações desta empresa
         app.loadAllComplaintsForCompany(companyName);
 
       } catch (err) {
@@ -97,7 +120,7 @@
       }
     });
 
-    // Botão para responder
+    // Botão de resposta
     window.openResponse = function (id) {
       window.location.href = "company-response.html?id=" + id;
     };
