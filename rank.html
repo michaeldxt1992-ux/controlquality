@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Rank das Empresas • Control Quality</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ranking de Empresas • CQ</title>
   <link rel="stylesheet" href="style.css">
 
   <!-- Firebase -->
@@ -13,199 +13,147 @@
 
   <style>
     .trophy {
-      font-size: 26px;
+      font-size: 28px;
       margin-right: 8px;
     }
-
-    .gold { color: #FFD700; }
-    .silver { color: #C0C0C0; }
-    .bronze { color: #CD7F32; }
+    .gold { color: #ffdd00; }
+    .silver { color: #c0c0c0; }
+    .bronze { color: #cd7f32; }
   </style>
 </head>
 
 <body data-guard="true">
 
-  <div class="app">
+<div class="app">
 
-    <!-- NAVBAR -->
-    <div class="navbar card">
-      <div class="brand">
-        <div class="logo">CQ</div>
-        <div>
-          <div style="font-weight:800;">Ranking das Empresas</div>
-          <div class="small user-email"></div>
-        </div>
-      </div>
-
-      <div class="nav-actions">
-        <button class="btn ghost" onclick="location.href='home.html'">Voltar</button>
+  <!-- NAVBAR -->
+  <div class="navbar card">
+    <div class="brand">
+      <div class="logo">CQ</div>
+      <div>
+        <div style="font-weight:800;">Ranking de Empresas</div>
+        <div class="small user-email"></div>
       </div>
     </div>
 
-    <div class="grid">
+    <div class="nav-actions">
+      <button class="btn ghost" onclick="location.href='home.html'">Voltar</button>
+    </div>
+  </div>
 
-      <!-- MENU LATERAL -->
-      <div class="sidebar card">
-        <ul class="nav-list">
+  <div class="grid">
 
-          <li><a href="home.html">🏠 Menu principal</a></li>
-
-          <!-- USER -->
-          <span id="menu-user">
-            <li><a href="complaint-create.html">➕ Criar reclamação</a></li>
-            <li><a href="complaint-list.html">📋 Minhas reclamações</a></li>
-            <li><a href="report-create.html">⚠ Criar denúncia</a></li>
-            <li><a href="report-list.html">🔎 Minhas denúncias</a></li>
-            <li><a class="active" href="rank.html">🏆 Ranking</a></li>
-          </span>
-
-          <!-- COMPANY -->
-          <span id="menu-company">
-            <li><a href="company-panel.html">🏢 Painel da empresa</a></li>
-            <li><a href="company-dashboard.html">📊 Dashboard</a></li>
-            <li><a href="company-reports.html">🚨 Denúncias recebidas</a></li>
-            <li><a href="company-profile.html">👤 Perfil da empresa</a></li>
-            <li><a class="active" href="rank.html">🏆 Ranking</a></li>
-          </span>
-
-        </ul>
-      </div>
-
-      <!-- CONTEÚDO PRINCIPAL -->
-      <div class="card">
-        <h1 class="h1">Top 10 Empresas</h1>
-        <p class="small">Classificação automática baseada no desempenho</p>
-
-        <div id="rank-list" style="margin-top:18px;">
-          Carregando ranking...
-        </div>
-      </div>
-
+    <!-- SIDEBAR -->
+    <div class="sidebar card">
+      <h4 class="small">Ranking</h4>
+      <p class="small">TOP 10 melhores empresas</p>
     </div>
 
-    <div class="footer">Control Quality • Dark Neon UI</div>
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="card">
+      <h1 class="h1">Melhores Empresas</h1>
+      <p class="small">Baseado na menor quantidade de denúncias registradas</p>
+
+      <div id="rank-list" style="margin-top:18px;">
+        Carregando...
+      </div>
+    </div>
 
   </div>
 
-  <!-- SCRIPTS -->
-  <script src="firebase.js"></script>
-  <script src="auth.js"></script>
-  <script src="auth-guard.js"></script>
+  <div class="footer">Control Quality • Ranking</div>
 
-  <script>
-  // MENU INTELIGENTE
-  auth.onAuthStateChanged(async user => {
-    if (!user) return;
+</div>
 
-    const snap = await db.collection("users").doc(user.uid).get();
-    if (!snap.exists) return;
+<!-- SCRIPTS -->
+<script src="firebase.js"></script>
+<script src="auth.js"></script>
+<script src="auth-guard.js"></script>
+<script>
+async function loadRank() {
+  const out = document.getElementById("rank-list");
 
-    const data = snap.data();
-
-    document.getElementById("menu-user").style.display =
-      data.type === "company" ? "none" : "block";
-
-    document.getElementById("menu-company").style.display =
-      data.type === "company" ? "block" : "none";
-  });
-
-  // CARREGAR RANK
-  async function loadRank() {
-    const listEl = document.getElementById("rank-list");
-
-    // 1) Buscar empresas
-    const snap = await db.collection("users")
+  try {
+    // 1. BUSCAR TODAS AS EMPRESAS
+    const companiesSnap = await db.collection("users")
       .where("type", "==", "company")
       .get();
 
-    if (snap.empty) {
-      listEl.innerHTML = "<p class='small'>Nenhuma empresa cadastrada.</p>";
+    if (companiesSnap.empty) {
+      out.innerHTML = "<p class='small'>Nenhuma empresa cadastrada.</p>";
       return;
     }
 
-    let companies = [];
+    let list = [];
 
-    // 2) Para cada empresa, calcular score
-    for (let doc of snap.docs) {
-      const data = doc.data();
-      const companyName = data.companyName;
+    // 2. PARA CADA EMPRESA, CONTAR AS DENÚNCIAS
+    for (let doc of companiesSnap.docs) {
+      const company = doc.data();
+      const companyName = company.companyName;
 
-      // Reclamações
-      const rc = await db.collection("complaints")
-        .where("company", "==", companyName)
-        .get();
-
-      let open = 0, closed = 0, responded = 0;
-
-      rc.forEach(c => {
-        const cd = c.data();
-        if (cd.status === "open") open++;
-        if (cd.status === "closed") closed++;
-        if (cd.response) responded++;
-      });
-
-      // Denúncias
-      const rp = await db.collection("reports")
+      // denúncias dessa empresa
+      const repSnap = await db.collection("reports")
         .where("companyName", "==", companyName)
+        .where("category", "==", "SERVICE_QUALITY")
         .get();
 
-      const reports = rp.size;
-
-      // Score final
-      const score =
-        (closed * 3) +
-        (responded * 2) -
-        (open * 1) -
-        (reports * 4);
-
-      companies.push({
-        name: companyName,
-        open,
-        closed,
-        responded,
-        reports,
-        score
+      list.push({
+        id: doc.id,
+        companyName,
+        email: company.email,
+        totalReports: repSnap.size
       });
     }
 
-    // Ordenar
-    companies.sort((a, b) => b.score - a.score);
+    // 3. ORDENAR POR MENOR NÚMERO DE DENÚNCIAS
+    list.sort((a, b) => a.totalReports - b.totalReports);
 
-    // Top 10
-    const top = companies.slice(0, 10);
+    // 4. PEGAR APENAS TOP 10
+    list = list.slice(0, 10);
 
-    listEl.innerHTML = "";
+    // 5. GERAR HTML
+    let html = "";
 
-    top.forEach((c, i) => {
+    list.forEach((c, index) => {
       let trophy = "";
 
-      if (i === 0) trophy = `<span class="trophy gold">🥇</span>`;
-      if (i === 1) trophy = `<span class="trophy silver">🥈</span>`;
-      if (i === 2) trophy = `<span class="trophy bronze">🥉</span>`;
+      if (index === 0) trophy = `<span class="trophy gold">🏆</span>`;
+      else if (index === 1) trophy = `<span class="trophy silver">🥈</span>`;
+      else if (index === 2) trophy = `<span class="trophy bronze">🥉</span>`;
+      else trophy = `<span class="trophy">⭐</span>`;
 
-      const div = document.createElement("div");
-      div.className = "list-item";
-      div.style.cursor = "pointer";
+      html += `
+        <div class="list-item">
+          <div style="display:flex;align-items:center;">
+            ${trophy}
+            <strong>${index + 1}. ${c.companyName}</strong>
+          </div>
 
-      div.onclick = () =>
-        location.href = `rank-detail.html?company=${encodeURIComponent(c.name)}&pos=${i+1}`;
-
-      div.innerHTML = `
-        <div>
-          <strong>${trophy} #${i + 1} • ${c.name}</strong>
-          <div class="small">
-            Score: <b>${c.score}</b> |
-            Fechadas: ${c.closed} • Respondidas: ${c.responded} • Abertas: ${c.open} • Denúncias: ${c.reports}
+          <div>
+            <span class="badge ${c.totalReports === 0 ? 'open' : 'closed'}">
+              ${c.totalReports} denúncias
+            </span>
+            <div style="margin-top:8px;">
+              <button class="btn ghost"
+                onclick="location.href='rank-detail.html?id=${c.id}'">
+                Ver detalhes
+              </button>
+            </div>
           </div>
         </div>
       `;
-
-      listEl.appendChild(div);
     });
-  }
 
-  loadRank();
-  </script>
+    out.innerHTML = html;
+
+  } catch (err) {
+    console.error(err);
+    out.innerHTML = "<p class='small'>Erro ao carregar ranking.</p>";
+  }
+}
+
+loadRank();
+</script>
 
 </body>
 </html>
