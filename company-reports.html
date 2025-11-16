@@ -3,124 +3,105 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Denúncias Recebidas</title>
+  <title>Denúncias Recebidas • Empresa</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 </head>
 
 <body data-guard="true">
-<div class="app">
 
-  <div class="navbar card">
-    <div class="brand">
-      <div class="logo">CQ</div>
-      <div>
-        <div style="font-weight:800;">Denúncias Recebidas</div>
-        <div class="small user-email"></div>
+  <div class="app">
+
+    <!-- NAVBAR -->
+    <div class="navbar card">
+      <div class="brand">
+        <div class="logo">CQ</div>
+        <div>
+          <div style="font-weight:800;">Denúncias Recebidas</div>
+          <div class="small user-email"></div>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn ghost" onclick="location.href='home.html'">Voltar</button>
       </div>
     </div>
-    <div class="nav-actions">
-      <button class="btn ghost" onclick="location.href='company-panel.html'">Voltar</button>
-    </div>
-  </div>
 
-  <div class="grid">
+    <div class="grid">
 
-    <div class="sidebar card">
-      <ul class="nav-list">
-        <li><a href="home.html">🏠 Menu principal</a></li>
-
-        <span id="menu-user">
-          <li><a href="complaint-create.html">➕ Criar reclamação</a></li>
-          <li><a href="complaint-list.html">📋 Minhas reclamações</a></li>
-        </span>
-
-        <span id="menu-company">
-          <li><a href="company-panel.html">🏢 Painel da empresa</a></li>
+      <!-- MENU LATERAL -->
+      <div class="sidebar card">
+        <ul class="nav-list">
+          <li><a href="home.html">🏠 Menu Principal</a></li>
+          <li><a href="company-panel.html">📋 Reclamações</a></li>
           <li><a href="company-dashboard.html">📊 Dashboard</a></li>
-          <li><a class="active" href="company-reports.html">🚨 Denúncias recebidas</a></li>
-          <li><a href="company-profile.html">👤 Perfil da empresa</a></li>
-        </span>
-      </ul>
+          <li><a class="active" href="company-reports.html">🚨 Denúncias Recebidas</a></li>
+          <li><a href="company-profile.html">👤 Perfil da Empresa</a></li>
+        </ul>
+      </div>
+
+      <!-- CONTEÚDO PRINCIPAL -->
+      <div class="card">
+        <h1 class="h1">Denúncias Recebidas</h1>
+        <p class="small">Somente denúncias sobre qualidade de serviço</p>
+
+        <div id="reports-company-list" style="margin-top:16px;">
+          Carregando...
+        </div>
+      </div>
+
     </div>
 
-    <div class="card" style="max-width:900px;margin:auto">
-      <h1 class="h1">Denúncias</h1>
-      <div id="reports-company-list" style="margin-top:16px;">Carregando...</div>
-    </div>
+    <div class="footer">Control Quality • Dark Neon UI</div>
 
   </div>
 
-</div>
+  <!-- Scripts gerais -->
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
+  <script src="auth-guard.js"></script>
+  <script src="app.js"></script>
 
-<script src="firebase.js"></script>
-<script src="auth.js"></script>
-<script src="auth-guard.js"></script>
-<script src="app.js"></script>
+  <!-- LÓGICA FINAL -->
+  <script>
+  auth.onAuthStateChanged(async user => {
+    if (!user) return;
 
-<script>
-auth.onAuthStateChanged(async user=>{
-  if(!user) return;
+    try {
+      // busca empresa no Firestore
+      const snap = await db.collection("users").doc(user.uid).get();
 
-  try {
-    const snap = await db.collection('users').doc(user.uid).get();
-    if(!snap.exists) {
-      alert('Conta inválida');
-      auth.signOut();
-      return;
+      if (!snap.exists) {
+        document.getElementById("reports-company-list").innerHTML =
+          "<p class='small'>Erro ao carregar dados da empresa.</p>";
+        return;
+      }
+
+      const data = snap.data();
+
+      if (data.type !== "company") {
+        alert("Você não tem permissão para acessar esta página.");
+        location.href = "home.html";
+        return;
+      }
+
+      // nome real da empresa
+      const companyName = data.companyName;
+
+      // carregar denúncias no app.js
+      app.loadReportsForCompany(companyName);
+
+    } catch (err) {
+      console.error(err);
+      document.getElementById("reports-company-list").innerHTML =
+        "<p class='small'>Erro ao carregar denúncias.</p>";
     }
-
-    const data = snap.data();
-    const menuUser = document.getElementById('menu-user');
-    const menuCompany = document.getElementById('menu-company');
-
-    if(data.type === 'company'){
-      menuCompany.style.display = 'block';
-      menuUser.style.display = 'none';
-    } else {
-      alert('Acesso negado: esta área é apenas para empresas.');
-      auth.signOut();
-      return;
-    }
-
-    const companyName = data.companyName;
-
-    const res = await db.collection('reports')
-      .where('companyName', '==', companyName)
-      .where('category', '==', 'SERVICE_QUALITY')
-      .orderBy('createdAt', 'desc')
-      .get();
-
-    const list = document.getElementById('reports-company-list');
-    list.innerHTML = '';
-
-    if(res.empty) {
-      list.innerHTML = "<p class='small'>Nenhuma denúncia encontrada.</p>";
-      return;
-    }
-
-    res.forEach(doc=>{
-      const d = doc.data();
-      const node = document.createElement('div');
-      node.className = 'list-item';
-      node.innerHTML = `
-        <div>
-          <strong>${d.reason}</strong>
-          <div class="small">${d.description ? (d.description.length > 120 ? d.description.substr(0,120) + '...' : d.description) : ''}</div>
-          <div class="small">${d.createdAt ? new Date(d.createdAt.seconds*1000).toLocaleString() : ''}</div>
-        </div>
-        <div>
-          <button class="btn ghost" onclick="location.href='report-detail.html?id=${doc.id}'">Ver</button>
-        </div>
-      `;
-      list.appendChild(node);
-    });
-
-  } catch(err) {
-    console.error(err);
-    document.getElementById('reports-company-list').innerHTML = "<p class='small'>Erro ao carregar denúncias.</p>";
-  }
-});
-</script>
+  });
+  </script>
 
 </body>
 </html>
