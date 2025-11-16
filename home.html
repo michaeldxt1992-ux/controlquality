@@ -16,6 +16,7 @@
 
   <div class="app">
 
+    <!-- NAVBAR -->
     <div class="navbar card">
       <div class="brand">
         <div class="logo">CQ</div>
@@ -36,10 +37,20 @@
       <!-- MENU LATERAL -->
       <div class="sidebar card">
         <ul class="nav-list">
+
           <li><a class="active" href="home.html">🏠 Menu principal</a></li>
-          <li><a href="complaint-create.html">➕ Criar reclamação</a></li>
-          <li><a href="complaint-list.html">📋 Minhas reclamações</a></li>
-          <li><a href="company-panel.html">🏢 Painel da empresa</a></li>
+
+          <!-- MENU DO USUÁRIO NORMAL -->
+          <span id="menu-user">
+            <li><a href="complaint-create.html">➕ Criar reclamação</a></li>
+            <li><a href="complaint-list.html">📋 Minhas reclamações</a></li>
+          </span>
+
+          <!-- MENU DA EMPRESA -->
+          <span id="menu-company">
+            <li><a href="company-panel.html">🏢 Painel da empresa</a></li>
+          </span>
+
         </ul>
       </div>
 
@@ -77,8 +88,41 @@
 
   </div>
 
+  <!-- Scripts -->
   <script src="firebase.js"></script>
   <script src="auth.js"></script>
   <script src="auth-guard.js"></script>
+
+  <!-- 🔥 MENU INTELIGENTE -->
+  <script>
+  auth.onAuthStateChanged(async user => {
+    if (!user) return;
+
+    try {
+      const snap = await db.collection("users").doc(user.uid).get();
+      if (!snap.exists) return;
+
+      const data = snap.data();
+      const type = data.type;
+
+      const menuUser = document.getElementById("menu-user");
+      const menuCompany = document.getElementById("menu-company");
+
+      if (type === "company") {
+        // Empresa
+        menuCompany.style.display = "block";
+        menuUser.style.display = "none";
+      } else {
+        // Usuário normal
+        menuCompany.style.display = "none";
+        menuUser.style.display = "block";
+      }
+
+    } catch (err) {
+      console.error(err);
+    }
+  });
+  </script>
+
 </body>
 </html>
