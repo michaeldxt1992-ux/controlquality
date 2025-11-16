@@ -44,11 +44,17 @@
           <span id="menu-user">
             <li><a href="complaint-create.html">➕ Criar reclamação</a></li>
             <li><a href="complaint-list.html">📋 Minhas reclamações</a></li>
+
+            <!-- DENÚNCIAS DO USUÁRIO -->
+            <li><a href="report-create.html">⚠ Criar denúncia</a></li>
+            <li><a href="report-list.html">🔎 Minhas denúncias</a></li>
           </span>
 
-          <!-- MENU DA EMPRESA (ATUALIZADO COM PERFIL) -->
+          <!-- MENU DA EMPRESA -->
           <span id="menu-company">
             <li><a href="company-panel.html">🏢 Painel da empresa</a></li>
+            <li><a href="company-dashboard.html">📊 Dashboard</a></li>
+            <li><a href="company-reports.html">🚨 Denúncias recebidas</a></li>
             <li><a href="company-profile.html">👤 Perfil da empresa</a></li>
           </span>
 
@@ -72,6 +78,12 @@
             <h3 style="margin:0;">Minhas Reclamações</h3>
             <p class="small">Ver status e respostas.</p>
             <button class="btn" onclick="location.href='complaint-list.html'">Abrir</button>
+          </div>
+
+          <div class="card">
+            <h3 style="margin:0;">Criar Denúncia</h3>
+            <p class="small">Enviar uma denúncia.</p>
+            <button class="btn" onclick="location.href='report-create.html'">Denunciar</button>
           </div>
 
           <div class="card">
@@ -110,11 +122,11 @@
       const menuCompany = document.getElementById("menu-company");
 
       if (type === "company") {
-        // Empresa
+        // Conta empresarial
         menuCompany.style.display = "block";
         menuUser.style.display = "none";
       } else {
-        // Usuário normal
+        // Conta de usuário comum
         menuCompany.style.display = "none";
         menuUser.style.display = "block";
       }
