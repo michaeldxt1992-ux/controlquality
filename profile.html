@@ -1,161 +1,132 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil - Control Quality</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Perfil • Control Quality</title>
+  <link rel="stylesheet" href="style.css">
 
-    <style>
-        body {
-            background: #0d0d18;
-            color: white;
-            font-family: Arial, sans-serif;
-            padding: 25px;
-            text-align: center;
-        }
-
-        .profile-card {
-            background: #131327;
-            padding: 20px;
-            border-radius: 12px;
-            max-width: 350px;
-            margin: auto;
-        }
-
-        .avatar {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            background: #222;
-            margin: auto;
-            margin-bottom: 15px;
-        }
-
-        input {
-            width: 100%;
-            margin-top: 12px;
-            padding: 10px;
-            border-radius: 6px;
-            border: none;
-            background: #1c1c38;
-            color: white;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            margin-top: 18px;
-            background: #035CFF;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .danger {
-            background: #ff4141;
-        }
-
-        a {
-            color: #ccc;
-            display: block;
-            margin-top: 20px;
-        }
-    </style>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 </head>
 
-<body>
+<body data-guard="true">
 
-<h2>Meu Perfil</h2>
+  <div class="app">
 
-<div class="profile-card">
-    <img id="avatar" class="avatar" src="https://www.w3schools.com/howto/img_avatar.png">
+    <!-- NAVBAR -->
+    <div class="navbar card">
+      <div class="brand">
+        <div class="logo">CQ</div>
+        <div>
+          <div style="font-weight:800;">Meu Perfil</div>
+          <div class="small user-email"></div>
+        </div>
+      </div>
 
-    <p><strong>E-mail:</strong> <span id="email"></span></p>
-    <p><strong>Nome:</strong> <span id="nome">Carregando...</span></p>
-    <p><strong>Total de Reclamações:</strong> <span id="total">0</span></p>
+      <div class="nav-actions">
+        <div class="search small">Usuário</div>
+        <button class="btn ghost" onclick="logout()">Sair</button>
+      </div>
+    </div>
 
-    <input id="novoNome" placeholder="Novo nome">
-    <button onclick="atualizarNome()">Atualizar Nome</button>
+    <div class="grid">
 
-    <button onclick="trocarSenha()">Trocar Senha</button>
-    <button class="danger" onclick="deletarConta()">Excluir Conta</button>
-</div>
+      <!-- MENU LATERAL -->
+      <div class="sidebar card">
+        <ul class="nav-list">
 
-<a href="home.html">Voltar</a>
+          <li><a href="home.html">🏠 Menu principal</a></li>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+          <!-- Menu do usuário -->
+          <span id="menu-user">
+            <li><a href="complaint-create.html">➕ Criar reclamação</a></li>
+            <li><a href="complaint-list.html">📋 Minhas reclamações</a></li>
+          </span>
 
-<script src="firebase.js"></script>
-<script src="auth-guard.js"></script>
+          <!-- Menu da empresa -->
+          <span id="menu-company">
+            <li><a href="company-panel.html">🏢 Painel da empresa</a></li>
+          </span>
 
-<script>
-auth.onAuthStateChanged(async user => {
+          <li><a class="active" href="profile.html">👤 Perfil</a></li>
+        </ul>
+      </div>
+
+      <!-- CONTEÚDO PRINCIPAL -->
+      <div class="card">
+        <h1 class="h1">Informações da Conta</h1>
+        <p class="small">Veja seus dados cadastrados no sistema.</p>
+
+        <div id="profile-box" style="margin-top:16px;">
+          Carregando dados...
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer">Control Quality • Dark Neon UI</div>
+
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
+  <script src="auth-guard.js"></script>
+
+  <!-- 🔥 MENU INTELIGENTE + PERFIL -->
+  <script>
+  auth.onAuthStateChanged(async user => {
     if (!user) return;
 
-    // Mostra informações básicas
-    document.getElementById("email").textContent = user.email;
+    try {
+      const ref = db.collection("users").doc(user.uid);
+      const snap = await ref.get();
 
-    // Busca nome no Firestore
-    const doc = await db.collection("users").doc(user.uid).get();
-    if (doc.exists) {
-        document.getElementById("nome").textContent = doc.data().nome;
-    } else {
-        document.getElementById("nome").textContent = "(sem nome)";
-    }
-
-    // Busca número de reclamações
-    const snap = await db.collection("complaints")
-                         .where("userId", "==", user.uid)
-                         .get();
-
-    document.getElementById("total").textContent = snap.size;
-});
-
-
-async function atualizarNome() {
-    const user = auth.currentUser;
-    const novoNome = document.getElementById("novoNome").value.trim();
-
-    if (!novoNome) {
-        alert("Digite um nome válido!");
+      if (!snap.exists) {
+        document.getElementById("profile-box").innerHTML =
+          "<p class='small'>Erro ao carregar dados do perfil.</p>";
         return;
+      }
+
+      const data = snap.data();
+
+      // MENU INTELIGENTE
+      const menuUser = document.getElementById("menu-user");
+      const menuCompany = document.getElementById("menu-company");
+
+      if (data.type === "company") {
+        menuCompany.style.display = "block";
+        menuUser.style.display = "none";
+      } else {
+        menuCompany.style.display = "none";
+        menuUser.style.display = "block";
+      }
+
+      // EXIBIR PERFIL
+      document.getElementById("profile-box").innerHTML = `
+        <div class="card" style="margin-top:12px;">
+          <p><b>Email:</b> ${user.email}</p>
+          <p><b>ID (UID):</b> ${user.uid}</p>
+          <p><b>Tipo de conta:</b> ${data.type === "company" ? "Empresa" : "Usuário"}</p>
+          <p><b>Nome da empresa:</b> ${data.companyName || "<i>Não aplicável</i>"}</p>
+          <p><b>Criado em:</b> 
+            ${user.metadata.creationTime 
+              ? new Date(user.metadata.creationTime).toLocaleString() 
+              : "—"}
+          </p>
+        </div>
+      `;
+
+    } catch (err) {
+      console.error(err);
+      document.getElementById("profile-box").innerHTML =
+        "<p class='small'>Erro ao carregar seu perfil.</p>";
     }
-
-    await db.collection("users").doc(user.uid).set({
-        nome: novoNome,
-        email: user.email
-    });
-
-    alert("Nome atualizado!");
-    location.reload();
-}
-
-function trocarSenha() {
-    const email = auth.currentUser.email;
-    auth.sendPasswordResetEmail(email)
-        .then(() => alert("E-mail de redefinição enviado!"))
-        .catch(err => alert("Erro: " + err.message));
-}
-
-function deletarConta() {
-    if (!confirm("Tem certeza que deseja excluir sua conta?")) return;
-
-    const user = auth.currentUser;
-
-    user.delete()
-        .then(() => {
-            db.collection("users").doc(user.uid).delete();
-            alert("Conta excluída.");
-            window.location.href = "index.html";
-        })
-        .catch(err => alert("Erro: " + err.message));
-}
-</script>
+  });
+  </script>
 
 </body>
 </html>
