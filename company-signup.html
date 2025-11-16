@@ -75,7 +75,7 @@
 <script src="firebase.js"></script>
 
 <script>
-function companySignup() {
+async function companySignup() {
     const nome = document.getElementById("nome").value.trim();
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
@@ -85,22 +85,25 @@ function companySignup() {
         return;
     }
 
-    auth.createUserWithEmailAndPassword(email, password)
-        .then(cred => {
-            const uid = cred.user.uid;
+    try {
+        // Criar conta no Auth
+        const cred = await auth.createUserWithEmailAndPassword(email, password);
+        const uid = cred.user.uid;
 
-            // Registrar empresa no Firestore
-            return db.collection("empresas").doc(uid).set({
-                nome,
-                email,
-                uid
-            });
-        })
-        .then(() => {
-            alert("Empresa cadastrada com sucesso!");
-            window.location.href = "company-login.html";
-        })
-        .catch(err => alert("Erro: " + err.message));
+        // Salvar dados no Firestore (coleção USERS)
+        await db.collection("users").doc(uid).set({
+            email: email,
+            companyName: nome,
+            type: "company",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        alert("Empresa cadastrada com sucesso!");
+        window.location.href = "company-login.html";
+
+    } catch (err) {
+        alert("Erro: " + err.message);
+    }
 }
 </script>
 
