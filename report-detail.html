@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Detalhes da Denúncia</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body data-guard="true">
+<div class="app">
+
+  <div class="navbar card">
+    <div class="brand">
+      <div class="logo">CQ</div>
+      <div>
+        <div style="font-weight:800;">Detalhes da Denúncia</div>
+        <div class="small user-email"></div>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <button class="btn ghost" onclick="history.back()">Voltar</button>
+    </div>
+  </div>
+
+  <div class="card" style="max-width:760px;margin:auto;">
+    <h1 class="h1">Denúncia</h1>
+    <div id="detail" class="small" style="margin-top:12px;">Carregando...</div>
+  </div>
+
+</div>
+
+<script src="firebase.js"></script>
+<script src="auth.js"></script>
+<script src="auth-guard.js"></script>
+
+<script>
+const id = new URLSearchParams(location.search).get("id");
+
+async function loadDetail() {
+  const doc = await db.collection("reports").doc(id).get();
+  if (!doc.exists) {
+    document.getElementById("detail").innerHTML = "Denúncia não encontrada.";
+    return;
+  }
+
+  const d = doc.data();
+
+  document.getElementById("detail").innerHTML = `
+    <strong>${d.reason}</strong><br><br>
+    <p><b>Denunciado:</b> ${d.against}</p>
+    <p><b>Descrição:</b></p>
+    <p>${d.description}</p>
+  `;
+}
+
+loadDetail();
+</script>
+
+</body>
+</html>
