@@ -94,7 +94,7 @@ async function companySignup() {
         await db.collection("users").doc(uid).set({
             email: email,
             companyName: nome,
-            type: "company",
+            type: "company", // <--- IMPORTANTE
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
@@ -103,6 +103,7 @@ async function companySignup() {
 
     } catch (err) {
         alert("Erro: " + err.message);
+        console.error(err);
     }
 }
 </script>
