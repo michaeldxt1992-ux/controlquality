@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rank das Empresas • Control Quality</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+
+<body data-guard="true">
+
+  <div class="app">
+
+    <!-- NAVBAR -->
+    <div class="navbar card">
+      <div class="brand">
+        <div class="logo">CQ</div>
+        <div>
+          <div style="font-weight:800;">Ranking das Empresas</div>
+          <div class="small user-email"></div>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn ghost" onclick="location.href='home.html'">Voltar</button>
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <!-- MENU LATERAL -->
+      <div class="sidebar card">
+        <ul class="nav-list">
+
+          <li><a href="home.html">🏠 Menu principal</a></li>
+
+          <!-- USER -->
+          <span id="menu-user">
+            <li><a href="complaint-create.html">➕ Criar reclamação</a></li>
+            <li><a href="complaint-list.html">📋 Minhas reclamações</a></li>
+            <li><a href="report-create.html">⚠ Criar denúncia</a></li>
+            <li><a href="report-list.html">🔎 Minhas denúncias</a></li>
+            <li><a class="active" href="rank.html">🏆 Ranking das Empresas</a></li>
+          </span>
+
+          <!-- COMPANY -->
+          <span id="menu-company">
+            <li><a href="company-panel.html">🏢 Painel da empresa</a></li>
+            <li><a href="company-dashboard.html">📊 Dashboard</a></li>
+            <li><a href="company-reports.html">🚨 Denúncias recebidas</a></li>
+            <li><a href="company-profile.html">👤 Perfil da empresa</a></li>
+            <li><a class="active" href="rank.html">🏆 Ranking das Empresas</a></li>
+          </span>
+
+        </ul>
+      </div>
+
+      <!-- CONTEÚDO PRINCIPAL -->
+      <div class="card">
+        <h1 class="h1">Top 10 Empresas</h1>
+        <p class="small">Classificação automática baseada no desempenho</p>
+
+        <div id="rank-list" style="margin-top:18px;">
+          Carregando ranking...
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer">Control Quality • Dark Neon UI</div>
+
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
+  <script src="auth-guard.js"></script>
+
+  <script>
+  // MENU INTELIGENTE
+  auth.onAuthStateChanged(async user => {
+    if (!user) return;
+
+    const snap = await db.collection("users").doc(user.uid).get();
+    if (!snap.exists) return;
+
+    const data = snap.data();
+
+    const menuUser = document.getElementById("menu-user");
+    const menuCompany = document.getElementById("menu-company");
+
+    if (data.type === "company") {
+      menuCompany.style.display = "block";
+      menuUser.style.display = "none";
+    } else {
+      menuCompany.style.display = "none";
+      menuUser.style.display = "block";
+    }
+  });
+
+  // CARREGAR RANK
+  async function loadRank() {
+    const listEl = document.getElementById("rank-list");
+
+    // 1) Buscar empresas
+    const snap = await db.collection("users")
+      .where("type", "==", "company")
+      .get();
+
+    if (snap.empty) {
+      listEl.innerHTML = "<p class='small'>Nenhuma empresa cadastrada.</p>";
+      return;
+    }
+
+    let companies = [];
+
+    // 2) Para cada empresa, calcular score
+    for (let doc of snap.docs) {
+      const data = doc.data();
+      const companyName = data.companyName;
+
+      // Buscar reclamações
+      const rc = await db.collection("complaints")
+        .where("company", "==", companyName)
+        .get();
+
+      let open = 0, closed = 0, responded = 0;
+
+      rc.forEach(c => {
+        const cd = c.data();
+        if (cd.status === "open") open++;
+        if (cd.status === "closed") closed++;
+        if (cd.response && cd.response.length > 0) responded++;
+      });
+
+      // Buscar denúncias
+      const rp = await db.collection("reports")
+        .where("companyName", "==", companyName)
+        .get();
+
+      const reports = rp.size;
+
+      // Score final
+      const score =
+          (closed * 3) +
+          (responded * 2) -
+          (open * 1) -
+          (reports * 4);
+
+      companies.push({
+        name: companyName,
+        open,
+        closed,
+        responded,
+        reports,
+        score
+      });
+    }
+
+    // Ordenar por score
+    companies.sort((a, b) => b.score - a.score);
+
+    // Top 10
+    const top = companies.slice(0, 10);
+
+    listEl.innerHTML = "";
+
+    top.forEach((c, i) => {
+      const div = document.createElement("div");
+      div.className = "list-item";
+
+      div.innerHTML = `
+        <div>
+          <strong>#${i + 1} • ${c.name}</strong>
+          <div class="small">
+            Score: <b>${c.score}</b> |
+            Fechadas: ${c.closed} • Respondidas: ${c.responded} • Abertas: ${c.open} • Denúncias: ${c.reports}
+          </div>
+        </div>
+      `;
+
+      listEl.appendChild(div);
+    });
+  }
+
+  loadRank();
+  </script>
+
+</body>
+</html>
