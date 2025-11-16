@@ -10,6 +10,17 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <style>
+    .trophy {
+      font-size: 26px;
+      margin-right: 8px;
+    }
+
+    .gold { color: #FFD700; }
+    .silver { color: #C0C0C0; }
+    .bronze { color: #CD7F32; }
+  </style>
 </head>
 
 <body data-guard="true">
@@ -45,7 +56,7 @@
             <li><a href="complaint-list.html">📋 Minhas reclamações</a></li>
             <li><a href="report-create.html">⚠ Criar denúncia</a></li>
             <li><a href="report-list.html">🔎 Minhas denúncias</a></li>
-            <li><a class="active" href="rank.html">🏆 Ranking das Empresas</a></li>
+            <li><a class="active" href="rank.html">🏆 Ranking</a></li>
           </span>
 
           <!-- COMPANY -->
@@ -54,7 +65,7 @@
             <li><a href="company-dashboard.html">📊 Dashboard</a></li>
             <li><a href="company-reports.html">🚨 Denúncias recebidas</a></li>
             <li><a href="company-profile.html">👤 Perfil da empresa</a></li>
-            <li><a class="active" href="rank.html">🏆 Ranking das Empresas</a></li>
+            <li><a class="active" href="rank.html">🏆 Ranking</a></li>
           </span>
 
         </ul>
@@ -91,16 +102,11 @@
 
     const data = snap.data();
 
-    const menuUser = document.getElementById("menu-user");
-    const menuCompany = document.getElementById("menu-company");
+    document.getElementById("menu-user").style.display =
+      data.type === "company" ? "none" : "block";
 
-    if (data.type === "company") {
-      menuCompany.style.display = "block";
-      menuUser.style.display = "none";
-    } else {
-      menuCompany.style.display = "none";
-      menuUser.style.display = "block";
-    }
+    document.getElementById("menu-company").style.display =
+      data.type === "company" ? "block" : "none";
   });
 
   // CARREGAR RANK
@@ -124,7 +130,7 @@
       const data = doc.data();
       const companyName = data.companyName;
 
-      // Buscar reclamações
+      // Reclamações
       const rc = await db.collection("complaints")
         .where("company", "==", companyName)
         .get();
@@ -135,10 +141,10 @@
         const cd = c.data();
         if (cd.status === "open") open++;
         if (cd.status === "closed") closed++;
-        if (cd.response && cd.response.length > 0) responded++;
+        if (cd.response) responded++;
       });
 
-      // Buscar denúncias
+      // Denúncias
       const rp = await db.collection("reports")
         .where("companyName", "==", companyName)
         .get();
@@ -147,10 +153,10 @@
 
       // Score final
       const score =
-          (closed * 3) +
-          (responded * 2) -
-          (open * 1) -
-          (reports * 4);
+        (closed * 3) +
+        (responded * 2) -
+        (open * 1) -
+        (reports * 4);
 
       companies.push({
         name: companyName,
@@ -162,7 +168,7 @@
       });
     }
 
-    // Ordenar por score
+    // Ordenar
     companies.sort((a, b) => b.score - a.score);
 
     // Top 10
@@ -171,12 +177,22 @@
     listEl.innerHTML = "";
 
     top.forEach((c, i) => {
+      let trophy = "";
+
+      if (i === 0) trophy = `<span class="trophy gold">🥇</span>`;
+      if (i === 1) trophy = `<span class="trophy silver">🥈</span>`;
+      if (i === 2) trophy = `<span class="trophy bronze">🥉</span>`;
+
       const div = document.createElement("div");
       div.className = "list-item";
+      div.style.cursor = "pointer";
+
+      div.onclick = () =>
+        location.href = `rank-detail.html?company=${encodeURIComponent(c.name)}&pos=${i+1}`;
 
       div.innerHTML = `
         <div>
-          <strong>#${i + 1} • ${c.name}</strong>
+          <strong>${trophy} #${i + 1} • ${c.name}</strong>
           <div class="small">
             Score: <b>${c.score}</b> |
             Fechadas: ${c.closed} • Respondidas: ${c.responded} • Abertas: ${c.open} • Denúncias: ${c.reports}
