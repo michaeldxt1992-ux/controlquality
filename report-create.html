@@ -28,25 +28,57 @@
     </div>
   </div>
 
-  <div class="card" style="max-width:720px;margin:auto">
-    <h1 class="h1">Nova Denúncia</h1>
+  <div class="grid">
 
-    <div class="field">
-      <label class="small">Contra quem?</label>
-      <input id="against" type="text" placeholder="Empresa, pessoa ou serviço">
+    <!-- MENU LATERAL -->
+    <div class="sidebar card">
+      <ul class="nav-list">
+        <li><a href="home.html">🏠 Menu principal</a></li>
+
+        <span id="menu-user">
+          <li><a href="complaint-create.html">➕ Criar reclamação</a></li>
+          <li><a href="complaint-list.html">📋 Minhas reclamações</a></li>
+          <li><a class="active" href="report-create.html">⚠ Criar denúncia</a></li>
+          <li><a href="report-list.html">🔎 Minhas denúncias</a></li>
+        </span>
+
+        <span id="menu-company">
+          <li><a href="company-panel.html">🏢 Painel da empresa</a></li>
+          <li><a href="company-dashboard.html">📊 Dashboard</a></li>
+          <li><a href="company-reports.html">🚨 Denúncias recebidas</a></li>
+          <li><a href="company-profile.html">👤 Perfil da empresa</a></li>
+        </span>
+      </ul>
     </div>
 
-    <div class="field">
-      <label class="small">Motivo</label>
-      <input id="reason" type="text" placeholder="Título da denúncia">
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="card" style="max-width:720px;margin:auto">
+      <h1 class="h1">Nova Denúncia (Qualidade de Serviço)</h1>
+
+      <div class="field">
+        <label class="small">Empresa alvo</label>
+        <!-- se for preenchido via URL, mostramos em read-only -->
+        <input id="companyName" type="text" placeholder="Nome exato da empresa (ex: ifood)">
+      </div>
+
+      <div class="field">
+        <label class="small">Motivo</label>
+        <input id="reason" type="text" placeholder="Ex: Atraso constante nas entregas">
+      </div>
+
+      <div class="field">
+        <label class="small">Descrição</label>
+        <textarea id="description" placeholder="Descreva detalhadamente a queixa relacionada à qualidade do serviço"></textarea>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:16px;">
+        <button class="btn" id="send-report">Enviar Denúncia</button>
+        <button class="btn ghost" onclick="location.href='home.html'">Cancelar</button>
+      </div>
+
+      <div id="hint" class="small" style="margin-top:12px;color:rgba(255,255,255,0.7)"></div>
     </div>
 
-    <div class="field">
-      <label class="small">Descrição</label>
-      <textarea id="description" placeholder="Descreva o ocorrido"></textarea>
-    </div>
-
-    <button class="btn" style="margin-top:16px" onclick="app.submitReport()">Enviar Denúncia</button>
   </div>
 
 </div>
@@ -55,6 +87,78 @@
 <script src="auth.js"></script>
 <script src="auth-guard.js"></script>
 <script src="app.js"></script>
+
+<script>
+(async function(){
+  // Preenche company se vier da URL: ?company=Nome%20da%20Empresa
+  const params = new URLSearchParams(location.search);
+  const preCompany = params.get('company');
+  if (preCompany) {
+    const input = document.getElementById('companyName');
+    input.value = decodeURIComponent(preCompany);
+    // deixar read-only para evitar troca
+    input.readOnly = true;
+    document.getElementById('hint').textContent = "Empresa preenchida automaticamente. Confirme e envie.";
+  }
+
+  // Menu inteligente
+  auth.onAuthStateChanged(async user=>{
+    if(!user) return;
+    const snap = await db.collection('users').doc(user.uid).get();
+    if(!snap.exists) return;
+    const data = snap.data();
+    const menuUser = document.getElementById('menu-user');
+    const menuCompany = document.getElementById('menu-company');
+    if(data.type === 'company'){
+      menuCompany.style.display = 'block';
+      menuUser.style.display = 'none';
+    } else {
+      menuCompany.style.display = 'none';
+      menuUser.style.display = 'block';
+    }
+  });
+
+  document.getElementById('send-report').addEventListener('click', async ()=> {
+    const companyName = (document.getElementById('companyName').value || '').trim();
+    const reason = (document.getElementById('reason').value || '').trim();
+    const description = (document.getElementById('description').value || '').trim();
+
+    if(!companyName || !reason || !description){
+      alert('Preencha todos os campos!');
+      return;
+    }
+
+    // Verificar se existe empresa com esse companyName
+    const q = await db.collection('users')
+      .where('companyName', '==', companyName)
+      .where('type', '==', 'company')
+      .limit(1)
+      .get();
+
+    if(q.empty){
+      alert('Empresa não encontrada. Verifique o nome exato da empresa.');
+      return;
+    }
+
+    try {
+      await db.collection('reports').add({
+        userId: auth.currentUser.uid,
+        companyName,
+        category: 'SERVICE_QUALITY',
+        reason,
+        description,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      alert('Denúncia registrada com sucesso!');
+      location.href = 'report-list.html';
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao enviar denúncia: ' + err.message);
+    }
+  });
+})();
+</script>
 
 </body>
 </html>
