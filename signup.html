@@ -54,6 +54,37 @@
   </div>
 
   <script src="firebase.js"></script>
-  <script src="auth.js"></script>
+
+  <script>
+  async function signup(){
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    if(!email || !password){
+      alert("Preencha todos os campos!");
+      return;
+    }
+
+    try{
+      // cria usuário no Auth
+      const res = await auth.createUserWithEmailAndPassword(email, password);
+
+      // salva no Firestore
+      await db.collection("users").doc(res.user.uid).set({
+        email: res.user.email,
+        type: "user",            // <--- IMPORTANTE
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      alert("Conta criada com sucesso!");
+      location.href = "home.html";
+
+    }catch(err){
+      alert("Erro: " + err.message);
+      console.error(err);
+    }
+  }
+  </script>
+
 </body>
 </html>
