@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Minhas Denúncias</title>
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+
+<body data-guard="true" onload="app.loadMyReports()">
+<div class="app">
+
+  <div class="navbar card">
+    <div class="brand">
+      <div class="logo">CQ</div>
+      <div>
+        <div style="font-weight:800;">Minhas Denúncias</div>
+        <div class="small user-email"></div>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <button class="btn ghost" onclick="location.href='home.html'">Voltar</button>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <div class="sidebar card">
+      <ul class="nav-list">
+        <li><a href="home.html">🏠 Menu principal</a></li>
+        <li><a href="report-create.html">⚠ Criar denúncia</a></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h1 class="h1">Minhas Denúncias</h1>
+      <div id="report-list" style="margin-top:16px;">Carregando...</div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="firebase.js"></script>
+<script src="auth.js"></script>
+<script src="auth-guard.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
