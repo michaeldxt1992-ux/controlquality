@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Criar Denúncia</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+
+<body data-guard="true">
+<div class="app">
+
+  <div class="navbar card">
+    <div class="brand">
+      <div class="logo">CQ</div>
+      <div>
+        <div style="font-weight:800;">Criar Denúncia</div>
+        <div class="small user-email"></div>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <button class="btn ghost" onclick="location.href='home.html'">Voltar</button>
+    </div>
+  </div>
+
+  <div class="card" style="max-width:720px;margin:auto">
+    <h1 class="h1">Nova Denúncia</h1>
+
+    <div class="field">
+      <label class="small">Contra quem?</label>
+      <input id="against" type="text" placeholder="Empresa, pessoa ou serviço">
+    </div>
+
+    <div class="field">
+      <label class="small">Motivo</label>
+      <input id="reason" type="text" placeholder="Título da denúncia">
+    </div>
+
+    <div class="field">
+      <label class="small">Descrição</label>
+      <textarea id="description" placeholder="Descreva o ocorrido"></textarea>
+    </div>
+
+    <button class="btn" style="margin-top:16px" onclick="app.submitReport()">Enviar Denúncia</button>
+  </div>
+
+</div>
+
+<script src="firebase.js"></script>
+<script src="auth.js"></script>
+<script src="auth-guard.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
