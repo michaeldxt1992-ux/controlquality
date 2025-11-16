@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Denúncias Recebidas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body data-guard="true">
+<div class="app">
+
+  <div class="navbar card">
+    <div class="brand">
+      <div class="logo">CQ</div>
+      <div>
+        <div style="font-weight:800;">Denúncias Recebidas</div>
+        <div class="small user-email"></div>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <button class="btn ghost" onclick="location.href='company-panel.html'">Voltar</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h1 class="h1">Denúncias</h1>
+    <div id="reports-company-list" style="margin-top:16px;">Carregando...</div>
+  </div>
+
+</div>
+
+<script src="firebase.js"></script>
+<script src="auth.js"></script>
+<script src="auth-guard.js"></script>
+
+<script>
+auth.onAuthStateChanged(async user => {
+  if (!user) return;
+
+  const snap = await db.collection("users").doc(user.uid).get();
+  const data = snap.data();
+
+  const company = data.companyName;
+
+  const res = await db.collection("reports")
+    .where("against", "==", company)
+    .orderBy("createdAt", "desc")
+    .get();
+
+  const list = document.getElementById("reports-company-list");
+  list.innerHTML = "";
+
+  if (res.empty) {
+    list.innerHTML = "<p class='small'>Nenhuma denúncia.</p>";
+    return;
+  }
+
+  res.forEach(doc => {
+    const d = doc.data();
+
+    const item = document.createElement("div");
+    item.className = "list-item";
+
+    item.innerHTML = `
+      <div>
+        <strong>${d.reason}</strong>
+        <div class="small">${new Date(d.createdAt.seconds * 1000).toLocaleString()}</div>
+      </div>
+
+      <div>
+        <button class="btn ghost" onclick="location.href='report-detail.html?id=${doc.id}'">Ver</button>
+      </div>
+    `;
+
+    list.appendChild(item);
+  });
+});
+</script>
+
+</body>
+</html>
