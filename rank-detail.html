@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Detalhes do Ranking • Control Quality</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+  <style>
+    .trophy {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    .gold { color: #FFD700; }
+    .silver { color: #C0C0C0; }
+    .bronze { color: #CD7F32; }
+
+    .stats-box {
+      background: #131327;
+      padding: 18px;
+      border-radius: 12px;
+      margin-top: 14px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(160px,1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .stat-card {
+      background: #1a1a33;
+      padding: 14px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 26px;
+      font-weight: bold;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+
+<body data-guard="true">
+
+  <div class="app">
+
+    <!-- NAVBAR -->
+    <div class="navbar card">
+      <div class="brand">
+        <div class="logo">CQ</div>
+        <div>
+          <div style="font-weight:800;">Ranking • Detalhes</div>
+          <div class="small user-email"></div>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn ghost" onclick="history.back()">Voltar</button>
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <!-- MENU LATERAL -->
+      <div class="sidebar card">
+        <ul class="nav-list">
+
+          <li><a href="home.html">🏠 Menu principal</a></li>
+
+          <span id="menu-user">
+            <li><a href="complaint-create.html">➕ Criar reclamação</a></li>
+            <li><a href="complaint-list.html">📋 Minhas reclamações</a></li>
+            <li><a href="report-create.html">⚠ Criar denúncia</a></li>
+            <li><a href="report-list.html">🔎 Minhas denúncias</a></li>
+            <li><a class="active" href="rank.html">🏆 Ranking</a></li>
+          </span>
+
+          <span id="menu-company">
+            <li><a href="company-panel.html">🏢 Painel da empresa</a></li>
+            <li><a href="company-dashboard.html">📊 Dashboard</a></li>
+            <li><a href="company-reports.html">🚨 Denúncias recebidas</a></li>
+            <li><a href="company-profile.html">👤 Perfil da empresa</a></li>
+            <li><a class="active" href="rank.html">🏆 Ranking</a></li>
+          </span>
+
+        </ul>
+      </div>
+
+      <!-- CONTEÚDO -->
+      <div class="card">
+        <h1 class="h1">Detalhes da Empresa</h1>
+        <p class="small">Desempenho completo no ranking do Control Quality</p>
+
+        <div id="trophy-box" style="text-align:center;margin-top:16px;"></div>
+
+        <div id="company-info" style="margin-top:18px;">Carregando...</div>
+
+        <h2 class="h1" style="margin-top:32px;">Estatísticas</h2>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="small">Reclamações Fechadas</div>
+            <div id="stat-closed" class="stat-number">0</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="small">Respondidas</div>
+            <div id="stat-responded" class="stat-number">0</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="small">Abertas</div>
+            <div id="stat-open" class="stat-number">0</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="small">Denúncias</div>
+            <div id="stat-reports" class="stat-number">0</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="small">Score Final</div>
+            <div id="stat-score" class="stat-number">0</div>
+          </div>
+        </div>
+
+        <div class="stats-box">
+          <p class="small">
+            O score é calculado automaticamente:
+            <br><br>
+            <b>(Fechadas × 3)</b> +
+            <b>(Respondidas × 2)</b> –
+            <b>(Abertas × 1)</b> –
+            <b>(Denúncias × 4)</b>
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
+  <script src="auth-guard.js"></script>
+
+  <script>
+    // MENU INTELIGENTE
+    auth.onAuthStateChanged(async user => {
+      if (!user) return;
+
+      const snap = await db.collection("users").doc(user.uid).get();
+      if (!snap.exists) return;
+
+      const data = snap.data();
+
+      document.getElementById("menu-user").style.display = data.type === "company" ? "none" : "block";
+      document.getElementById("menu-company").style.display = data.type === "company" ? "block" : "none";
+    });
+
+    // PEGAR NOME DA EMPRESA DA URL
+    const params = new URLSearchParams(location.search);
+    const companyName = params.get("company");
+
+    if (!companyName) {
+      document.getElementById("company-info").innerHTML = "Empresa inválida.";
+    }
+
+    async function loadDetails() {
+      document.getElementById("company-info").innerHTML = `
+        <strong>${companyName}</strong>
+      `;
+
+      // 1) Reclamações
+      const rc = await db.collection("complaints")
+        .where("company", "==", companyName)
+        .get();
+
+      let open = 0, closed = 0, responded = 0;
+
+      rc.forEach(c => {
+        const d = c.data();
+        if (d.status === "open") open++;
+        if (d.status === "closed") closed++;
+        if (d.response) responded++;
+      });
+
+      // 2) Denúncias
+      const rp = await db.collection("reports")
+        .where("companyName", "==", companyName)
+        .get();
+
+      const reports = rp.size;
+
+      // 3) Score final
+      const score =
+        (closed * 3) +
+        (responded * 2) -
+        (open * 1) -
+        (reports * 4);
+
+      // Preencher estatísticas
+      document.getElementById("stat-open").innerText = open;
+      document.getElementById("stat-closed").innerText = closed;
+      document.getElementById("stat-responded").innerText = responded;
+      document.getElementById("stat-reports").innerText = reports;
+      document.getElementById("stat-score").innerText = score;
+
+      // Troféus especiais
+      const pos = params.get("pos"); // posição no rank (1, 2, 3)
+
+      const trophyBox = document.getElementById("trophy-box");
+
+      if (pos == 1) trophyBox.innerHTML = `<div class="trophy gold">🥇</div>`;
+      else if (pos == 2) trophyBox.innerHTML = `<div class="trophy silver">🥈</div>`;
+      else if (pos == 3) trophyBox.innerHTML = `<div class="trophy bronze">🥉</div>`;
+      else trophyBox.innerHTML = "";
+    }
+
+    loadDetails();
+  </script>
+
+</body>
+</html>
